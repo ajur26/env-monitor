@@ -7,6 +7,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.conf import settings
 from rest_framework import status
+from django.utils import timezone
+from datetime import timedelta
+
 
 class MeasurementListCreateView(generics.ListCreateAPIView):
     serializer_class = MeasurementSerializer
@@ -43,14 +46,32 @@ class MeasurementListCreateView(generics.ListCreateAPIView):
         
 class MeasurementStatsView(APIView):
     def get(self, request):
-        queryset = Measurement.objects.all()
+        now = timezone.now()
+        one_hour_ago = now - timedelta(hours=1)
+        twenty_four_hours_ago = now - timedelta(hours=24)
 
-        stats = queryset.aggregate(
-            temperature_avg=Avg("temperature"),
-            temperature_min=Min("temperature"),
-            temperature_max=Max("temperature"),
-            humidity_avg=Avg("humidity"),
-            co_avg=Avg("co"),
-        )
+        last_measurement = Measurement.objects.order_by("-created_at").first()
 
-        return Response(stats)
+        last_hour = Measurement.objects.filter(created_at__gte=one_hour_ago)
+        last_24h = Measurement.objects.filter(created_at__gte=twenty_four_hours_ago)
+
+        data = {
+            "last_measurement": {
+                "temperature": last_measurement.temperature if last_measurement else None,
+                "humidity": last_measurement.humidity if last_measurement else None,
+                "co": last_measurement.co if last_measurement else None,
+                "created_at": last_measurement.created_at if last_measurement else None,
+            },
+            "last_hour_avg": {
+                "temperature": last_hour.aggregate(Avg("temperature"))["temperature__avg"],
+                "humidity": last_hour.aggregate(Avg("humidity"))["humidity__avg"],
+                "co": last_hour.aggregate(Avg("co"))["co__avg"],
+            },
+            "last_24h_avg": {
+                "temperature": last_24h.aggregate(Avg("temperature"))["temperature__avg"],
+                "humidity": last_24h.aggregate(Avg("humidity"))["humidity__avg"],
+                "co": last_24h.aggregate(Avg("co"))["co__avg"],
+            },
+        }
+
+        return Response(data)
