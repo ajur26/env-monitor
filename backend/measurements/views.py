@@ -25,15 +25,15 @@ def get_queryset(self):
     return queryset
 
 class MeasurementStatsView(APIView):
-    def get(self,request):
+    def get(self, request):
         queryset = Measurement.objects.all()
 
-        data = {
-            "temperature_avg": queryset.aggregate(Avg("temperature"))["temperature_avg"],
-            "temperature_min": queryset.aggregate(Min("temperature"))["temperature_min"],
-            "temperature_max": queryset.aggregate(Max("temperature"))["temperature_max"],
-            "humidity_avg": queryset.aggregate(Avg("humidity"))["humidity_avg"],
-            "co2_avg": queryset.aggregate(Avg("co2"))["co2_avg"],
-        }
+        stats = queryset.aggregate(
+            temperature_avg=Avg("temperature"),
+            temperature_min=Min("temperature"),
+            temperature_max=Max("temperature"),
+            humidity_avg=Avg("humidity"),
+            co2_avg=Avg("co2"),
+        )
 
-        return Response(data)
+        return Response(stats)
