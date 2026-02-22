@@ -50,7 +50,7 @@ class MeasurementStatsView(APIView):
             temperature_min=Min("temperature"),
             temperature_max=Max("temperature"),
             humidity_avg=Avg("humidity"),
-            co2_avg=Avg("co2"),
+            co_avg=Avg("co"),
         )
 
         return Response(stats)
