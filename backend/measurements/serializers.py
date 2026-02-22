@@ -15,3 +15,9 @@ class MeasurementSerializer(serializers.ModelSerializer):
         if value < 0 or value > 100:
             raise serializers.ValidationError("Humidity must be between 0 and 100.")
         return value
+    
+    def validate_co2(self, value):
+        if value is not None:
+            if value < 0 or value > 10000:
+                raise serializers.ValidationError("CO2 must be between 0 and 10000 ppm.")
+        return value
