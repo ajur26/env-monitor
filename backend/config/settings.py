@@ -137,3 +137,4 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+API_TOKEN = "super-secret-token"
