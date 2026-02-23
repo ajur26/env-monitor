@@ -75,3 +75,23 @@ class MeasurementStatsView(APIView):
         }
 
         return Response(data)
+    
+class RecentMeasurementsView(APIView):
+    def get(self, request):
+        period = request.query_params.get("period", "1h")
+
+        now = timezone.now()
+
+        if period == "24h":
+            since = now - timedelta(hours=24)
+        else:
+            since = now - timedelta(hours=1)
+
+        queryset = (
+            Measurement.objects
+            .filter(created_at__gte=since)
+            .order_by("created_at")
+        )
+
+        serializer = MeasurementSerializer(queryset, many=True)
+        return Response(serializer.data)
