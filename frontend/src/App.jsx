@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Chart from "./components/Chart";
 
 const API_BASE = "http://127.0.0.1:8000/api";
 
@@ -26,18 +27,27 @@ function Card({ title, children }) {
 export default function App() {
   const [measurements, setMeasurements] = useState([]);
   const [stats, setStats] = useState(null);
+  const [chartData, setChartData] = useState([]);
+  const [period, setPeriod] = useState("1h");
 
   async function load() {
-    const [mRes, sRes] = await Promise.all([
-      fetch(`${API_BASE}/measurements/?page=1`),
-      fetch(`${API_BASE}/measurements/stats/`),
-    ]);
+    try {
+      const [mRes, sRes, rRes] = await Promise.all([
+        fetch(`${API_BASE}/measurements/?page=1`),
+        fetch(`${API_BASE}/measurements/stats/`),
+        fetch(`${API_BASE}/measurements/recent/?period=${period}`),
+      ]);
 
-    const mData = await mRes.json();
-    const sData = await sRes.json();
+      const mData = await mRes.json();
+      const sData = await sRes.json();
+      const rData = await rRes.json();
 
-    setMeasurements(mData?.results ?? []);
-    setStats(sData);
+      setMeasurements(mData?.results ?? []);
+      setStats(sData);
+      setChartData(rData);
+    } catch (err) {
+      console.error("Error loading data:", err);
+    }
   }
 
   useEffect(() => {
@@ -47,7 +57,7 @@ export default function App() {
     load();
     const id = setInterval(load, 15000);
     return () => clearInterval(id);
-  }, []);
+  }, [period]);
 
   const latest = measurements[0];
 
@@ -115,32 +125,49 @@ export default function App() {
         </div>
 
         {/* PRAWA KOLUMNA */}
-        <Card title="Latest Measurements">
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead>
-                <tr style={{ textAlign: "left", color: "#94a3b8" }}>
-                  <th style={{ paddingBottom: 12 }}>Time</th>
-                  <th>Temp</th>
-                  <th>Humidity</th>
-                  <th>CO</th>
-                </tr>
-              </thead>
-              <tbody>
-                {measurements.map((m) => (
-                  <tr key={m.id}>
-                    <td style={{ padding: "10px 0" }}>
-                      {formatTs(m.created_at)}
-                    </td>
-                    <td>{m.temperature}</td>
-                    <td>{m.humidity}</td>
-                    <td>{m.co}</td>
+        <div>
+          <Card title="Latest Measurements">
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr style={{ textAlign: "left", color: "#94a3b8" }}>
+                    <th style={{ paddingBottom: 12 }}>Time</th>
+                    <th>Temp</th>
+                    <th>Humidity</th>
+                    <th>CO</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {measurements.map((m) => (
+                    <tr key={m.id}>
+                      <td style={{ padding: "10px 0" }}>
+                        {formatTs(m.created_at)}
+                      </td>
+                      <td>{m.temperature}</td>
+                      <td>{m.humidity}</td>
+                      <td>{m.co}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          {/* WYKRES */}
+          <div style={{ marginTop: 40 }}>
+            <div style={{ marginBottom: 20 }}>
+              <button onClick={() => setPeriod("1h")}>1h</button>
+              <button
+                onClick={() => setPeriod("24h")}
+                style={{ marginLeft: 10 }}
+              >
+                24h
+              </button>
+            </div>
+
+            <Chart data={chartData} />
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* RESPONSYWNOŚĆ */}
