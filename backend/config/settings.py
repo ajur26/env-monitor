@@ -136,5 +136,11 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 50,
 }
 
+CO_THRESHOLDS = {
+    "ok_max": 30,        # 0–30
+    "warning_max": 70,   # 31–70
+    # >70 = danger
+}
+
 CORS_ALLOW_ALL_ORIGINS = True
 API_TOKEN = "super-secret-token"
