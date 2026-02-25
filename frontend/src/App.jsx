@@ -8,7 +8,20 @@ function formatTs(ts) {
   return new Date(ts).toLocaleString();
 }
 
-function Card({ title, children }) {
+function getCoUI(status) {
+  if (status === "ok") {
+    return { label: "OK", border: "#22c55e", bg: "#052e16", fg: "#dcfce7" };
+  }
+  if (status === "warning") {
+    return { label: "WARNING", border: "#f59e0b", bg: "#451a03", fg: "#fffbeb" };
+  }
+  if (status === "danger") {
+    return { label: "DANGER", border: "#ef4444", bg: "#450a0a", fg: "#fee2e2" };
+  }
+  return { label: "UNKNOWN", border: "#334155", bg: "#0b1220", fg: "#e2e8f0" };
+}
+
+function Card({ title, children, accent }) {
   return (
     <div
       style={{
@@ -16,6 +29,7 @@ function Card({ title, children }) {
         padding: 24,
         borderRadius: 14,
         boxShadow: "0 6px 20px rgba(0,0,0,0.4)",
+        border: accent ? `1px solid ${accent}` : "1px solid transparent",
       }}
     >
       <h3 style={{ marginTop: 0, color: "#cbd5e1" }}>{title}</h3>
@@ -57,9 +71,15 @@ export default function App() {
     load();
     const id = setInterval(load, 15000);
     return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [period]);
 
   const latest = measurements[0];
+
+  const coUi = getCoUI(stats?.co_status);
+  const thresholds = stats?.co_thresholds;
+  const okMax = thresholds?.ok_max ?? 30;
+  const warningMax = thresholds?.warning_max ?? 70;
 
   return (
     <div
@@ -88,12 +108,43 @@ export default function App() {
       >
         {/* LEWA KOLUMNA */}
         <div style={{ display: "flex", flexDirection: "column", gap: 30 }}>
-          <Card title="Last Measurement">
+          <Card title="Last Measurement" accent={coUi.border}>
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 10,
+                padding: "6px 10px",
+                borderRadius: 999,
+                background: coUi.bg,
+                color: coUi.fg,
+                fontSize: 12,
+                fontWeight: 800,
+                letterSpacing: 0.6,
+                marginBottom: 14,
+                border: `1px solid ${coUi.border}`,
+              }}
+            >
+              CO STATUS: {coUi.label}
+            </div>
+
             <div style={{ fontSize: 32, fontWeight: 700 }}>
               {latest?.temperature ?? "-"}°C
             </div>
             <div>Humidity: {latest?.humidity ?? "-"}%</div>
-            <div>CO: {latest?.co ?? "-"} ppm</div>
+
+            <div style={{ marginTop: 6 }}>
+              CO:{" "}
+              <span style={{ fontWeight: 700 }}>
+                {latest?.co ?? "-"} ppm
+              </span>
+            </div>
+
+            <div style={{ marginTop: 10, fontSize: 12, color: "#94a3b8" }}>
+              Thresholds: OK ≤ {okMax} ppm, WARNING ≤ {warningMax} ppm, DANGER &gt;{" "}
+              {warningMax} ppm
+            </div>
+
             <div style={{ marginTop: 10, fontSize: 12, color: "#94a3b8" }}>
               {latest ? formatTs(latest.created_at) : "-"}
             </div>
@@ -155,11 +206,34 @@ export default function App() {
 
           {/* WYKRES */}
           <div style={{ marginTop: 40 }}>
+            <div style={{ marginBottom: 12, color: "#94a3b8", fontSize: 12 }}>
+              Chart period
+            </div>
             <div style={{ marginBottom: 20 }}>
-              <button onClick={() => setPeriod("1h")}>1h</button>
+              <button
+                onClick={() => setPeriod("1h")}
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: 10,
+                  border: period === "1h" ? "1px solid #38bdf8" : "1px solid #334155",
+                  background: period === "1h" ? "#0b1220" : "#111827",
+                  color: "white",
+                  cursor: "pointer",
+                }}
+              >
+                1h
+              </button>
               <button
                 onClick={() => setPeriod("24h")}
-                style={{ marginLeft: 10 }}
+                style={{
+                  marginLeft: 10,
+                  padding: "8px 12px",
+                  borderRadius: 10,
+                  border: period === "24h" ? "1px solid #38bdf8" : "1px solid #334155",
+                  background: period === "24h" ? "#0b1220" : "#111827",
+                  color: "white",
+                  cursor: "pointer",
+                }}
               >
                 24h
               </button>
