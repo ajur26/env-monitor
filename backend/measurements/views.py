@@ -8,6 +8,7 @@ from django.utils.dateparse import parse_date
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Measurement
 from .permissions import IsUserOrDeviceApiKey
@@ -48,6 +49,8 @@ class MeasurementListCreateView(generics.ListCreateAPIView):
 
 
 class MeasurementStatsView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         now = timezone.now()
         one_hour_ago = now - timedelta(hours=1)
@@ -87,6 +90,8 @@ class MeasurementStatsView(APIView):
 
 
 class RecentMeasurementsView(APIView):
+    permission_classes = [IsAuthenticated]
+    
     def get(self, request):
         period = request.query_params.get("period", "1h")
         now = timezone.now()
