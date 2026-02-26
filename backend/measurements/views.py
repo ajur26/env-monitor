@@ -1,15 +1,16 @@
 from datetime import timedelta
 
 from django.conf import settings
+from django.db.models import Avg
 from django.utils import timezone
 from django.utils.dateparse import parse_date
-from django.db.models import Avg
 
-from rest_framework import generics, status
+from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Measurement
+from .permissions import IsUserOrDeviceApiKey
 from .serializers import MeasurementSerializer
 
 
@@ -25,6 +26,7 @@ def co_status(value, thresholds):
 
 class MeasurementListCreateView(generics.ListCreateAPIView):
     serializer_class = MeasurementSerializer
+    permission_classes = [IsUserOrDeviceApiKey]
 
     def get_queryset(self):
         queryset = Measurement.objects.all().order_by("-created_at")
@@ -43,18 +45,6 @@ class MeasurementListCreateView(generics.ListCreateAPIView):
                 queryset = queryset.filter(created_at__date__lte=parsed_to)
 
         return queryset
-
-    def create(self, request, *args, **kwargs):
-        token = request.headers.get("X-API-KEY")
-        expected = getattr(settings, "API_TOKEN", None)
-
-        if token != expected:
-            return Response(
-                {"detail": "Invalid or missing API token."},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
-
-        return super().create(request, *args, **kwargs)
 
 
 class MeasurementStatsView(APIView):
