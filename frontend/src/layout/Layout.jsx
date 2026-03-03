@@ -1,7 +1,8 @@
+import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import HeaderRight from "./HeaderRight";
 
-export default function Layout({ children }) {
+export default function Layout() {
   return (
     <div
       style={{
@@ -21,7 +22,7 @@ export default function Layout({ children }) {
           borderRight: "1px solid #1e293b",
         }}
       >
-        {children}
+        <Outlet />
       </main>
 
       <HeaderRight />

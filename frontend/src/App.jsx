@@ -1,26 +1,52 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import ProtectedRoute from "./auth/ProtectedRoute";
-import Layout from "./layout/Layout";
-import Dashboard from "./pages/Dashboard";
-import Login from "./pages/Login";
+import { NavLink } from "react-router-dom";
 
-export default function App() {
+function MenuItem({ to, label, end }) {
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
+    <NavLink
+      to={to}
+      end={end}
+      style={({ isActive }) => ({
+        display: "block",
+        padding: "12px 16px",
+        borderRadius: 10,
+        textDecoration: "none",
+        background: isActive ? "#1e293b" : "transparent",
+        color: isActive ? "white" : "#94a3b8",
+        fontWeight: isActive ? 600 : 400,
+      })}
+    >
+      {label}
+    </NavLink>
+  );
+}
 
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Layout>
-              <Dashboard />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
+export default function Sidebar() {
+  return (
+    <aside
+      style={{
+        padding: 20,
+        borderRight: "1px solid #1e293b",
+        display: "flex",
+        flexDirection: "column",
+        gap: 24,
+      }}
+    >
+      <div
+        style={{
+          fontSize: 20,
+          fontWeight: 700,
+          borderBottom: "1px solid #1e293b",
+          paddingBottom: 12,
+        }}
+      >
+        ENV-MONITOR
+      </div>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <MenuItem to="/" label="Home" end />
+        <MenuItem to="/history" label="Historia" />
+        <MenuItem to="/alarms" label="Alarmy" />
+      </div>
+    </aside>
   );
 }
