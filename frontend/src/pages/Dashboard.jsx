@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Chart from "../components/Chart";
 import { apiFetch } from "../api/client";
-import { clearTokens } from "../auth/auth";
 
 function formatTs(ts) {
   if (!ts) return "-";
@@ -47,19 +46,17 @@ function Card({ title, children, accent, headerRight }) {
   );
 }
 
-function SmallButton({ active, onClick, children, danger }) {
+function SmallButton({ active, onClick, children }) {
   return (
     <button
       onClick={onClick}
       style={{
         padding: "8px 12px",
         borderRadius: 10,
-        border: danger
-          ? "1px solid #ef4444"
-          : active
+        border: active
           ? "1px solid #38bdf8"
           : "1px solid #334155",
-        background: danger ? "#450a0a" : active ? "#0b1220" : "#111827",
+        background: active ? "#0b1220" : "#111827",
         color: "white",
         cursor: "pointer",
       }}
@@ -77,9 +74,12 @@ export default function Dashboard() {
   const [chartData, setChartData] = useState([]);
   const [period, setPeriod] = useState("1h");
   const [expanded, setExpanded] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   async function load() {
     try {
+      setLoading(true);
+
       const [mData, sData, rData] = await Promise.all([
         apiFetch(`/measurements/?page=1`),
         apiFetch(`/measurements/stats/`),
@@ -88,15 +88,15 @@ export default function Dashboard() {
 
       setMeasurements(mData?.results ?? []);
       setStats(sData);
-      setChartData(rData);
+      setChartData(Array.isArray(rData) ? rData : []);
     } catch (err) {
       console.error("Error loading data:", err);
 
-      // jeśli token nieprawidłowy/wygaśnięty -> wyloguj i do logowania
       if (err?.status === 401) {
-        clearTokens();
         navigate("/login", { replace: true });
       }
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -107,7 +107,6 @@ export default function Dashboard() {
     load();
     const id = setInterval(load, 15000);
     return () => clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [period]);
 
   const latest = measurements[0];
@@ -115,11 +114,6 @@ export default function Dashboard() {
 
   const visibleCount = expanded ? 20 : 5;
   const visibleMeasurements = measurements.slice(0, visibleCount);
-
-  function handleLogout() {
-    clearTokens();
-    navigate("/login", { replace: true });
-  }
 
   return (
     <div
@@ -132,16 +126,10 @@ export default function Dashboard() {
         fontFamily: "Inter, Arial, sans-serif",
       }}
     >
-      <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-        <h1 style={{ marginBottom: 10 }}>ENV-MONITOR Dashboard</h1>
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <SmallButton danger onClick={handleLogout}>
-            Logout
-          </SmallButton>
-        </div>
+      <div style={{ marginBottom: 20 }}>
+        <h1>ENV-MONITOR Dashboard</h1>
       </div>
 
-      {/* GÓRNA SEKCJA */}
       <div
         style={{
           display: "grid",
@@ -178,25 +166,14 @@ export default function Dashboard() {
               {latest ? formatTs(latest.created_at) : "-"}
             </div>
           </Card>
-
-          <Card title="Average (Last 1h)">
-            <div>Temp: {stats?.last_hour_avg?.temperature?.toFixed(2) ?? "-"} °C</div>
-            <div>Humidity: {stats?.last_hour_avg?.humidity?.toFixed(2) ?? "-"} %</div>
-            <div>CO: {stats?.last_hour_avg?.co?.toFixed(2) ?? "-"} ppm</div>
-          </Card>
-
-          <Card title="Average (Last 24h)">
-            <div>Temp: {stats?.last_24h_avg?.temperature?.toFixed(2) ?? "-"} °C</div>
-            <div>Humidity: {stats?.last_24h_avg?.humidity?.toFixed(2) ?? "-"} %</div>
-            <div>CO: {stats?.last_24h_avg?.co?.toFixed(2) ?? "-"} ppm</div>
-          </Card>
         </div>
 
-        {/* PRAWA STRONA — WYKRES */}
+        {/* PRAWA STRONA — WYKRESY */}
         <div>
           <div style={{ marginBottom: 12, color: "#94a3b8", fontSize: 12 }}>
             Chart period
           </div>
+
           <div style={{ marginBottom: 20 }}>
             <SmallButton active={period === "1h"} onClick={() => setPeriod("1h")}>
               1h
@@ -207,57 +184,31 @@ export default function Dashboard() {
             </SmallButton>
           </div>
 
-          <Chart data={chartData} />
+          {loading && (
+            <div style={{ marginBottom: 20, color: "#94a3b8", fontSize: 12 }}>
+              Loading chart data...
+            </div>
+          )}
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 40 }}>
+            <Chart
+              title={`Temperature (${period})`}
+              data={chartData}
+              dataKey="temperature"
+            />
+            <Chart
+              title={`Humidity (${period})`}
+              data={chartData}
+              dataKey="humidity"
+            />
+            <Chart
+              title={`CO (${period})`}
+              data={chartData}
+              dataKey="co"
+            />
+          </div>
         </div>
       </div>
-
-      {/* DOLNA SEKCJA — LAST MEASUREMENTS 5/20 */}
-      <Card
-        title={`Last Measurements (${visibleMeasurements.length}/${Math.min(
-          measurements.length,
-          20
-        )})`}
-        headerRight={
-          measurements.length > 5 ? (
-            <SmallButton active={expanded} onClick={() => setExpanded((v) => !v)}>
-              {expanded ? "Show less" : "Show more"}
-            </SmallButton>
-          ) : null
-        }
-      >
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ textAlign: "left", color: "#94a3b8" }}>
-                <th style={{ paddingBottom: 12 }}>Time</th>
-                <th>Temp</th>
-                <th>Humidity</th>
-                <th>CO</th>
-              </tr>
-            </thead>
-            <tbody>
-              {visibleMeasurements.map((m) => (
-                <tr key={m.id}>
-                  <td style={{ padding: "8px 0" }}>{formatTs(m.created_at)}</td>
-                  <td>{m.temperature}</td>
-                  <td>{m.humidity}</td>
-                  <td>{m.co}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
-
-      <style>
-        {`
-          @media (max-width: 1000px) {
-            div[style*="grid-template-columns: 350px 1fr"] {
-              grid-template-columns: 1fr !important;
-            }
-          }
-        `}
-      </style>
     </div>
   );
 }
