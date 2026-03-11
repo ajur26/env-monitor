@@ -6,31 +6,24 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
+  Legend,
 } from "recharts";
 
 function formatTime(ts) {
   return new Date(ts).toLocaleTimeString();
 }
 
-function getColor(dataKey) {
-  if (dataKey === "temperature") return "#38bdf8";
-  if (dataKey === "humidity") return "#22c55e";
-  if (dataKey === "co") return "#ef4444";
-  return "#94a3b8";
-}
-
-export default function Chart({ data, dataKey, title }) {
-  const color = getColor(dataKey);
-
+export default function Chart({ data, title }) {
   return (
     <div
       style={{
         width: "100%",
-        height: 250,
+        height: 380,
         background: "#1e293b",
-        padding: 20,
         borderRadius: 14,
         boxShadow: "0 6px 20px rgba(0,0,0,0.4)",
+        boxSizing: "border-box",
+        padding: 20,
       }}
     >
       {title && (
@@ -39,34 +32,55 @@ export default function Chart({ data, dataKey, title }) {
         </h3>
       )}
 
-      <ResponsiveContainer width="100%" height="85%">
-        <LineChart data={data}>
-          <CartesianGrid stroke="#334155" strokeDasharray="3 3" />
+      <div style={{ width: "100%", height: "320px" }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data}>
+            <CartesianGrid stroke="#334155" strokeDasharray="3 3" />
 
-          <XAxis
-            dataKey="created_at"
-            tickFormatter={formatTime}
-            stroke="#94a3b8"
-          />
+            <XAxis
+              dataKey="created_at"
+              tickFormatter={formatTime}
+              stroke="#94a3b8"
+            />
 
-          <YAxis stroke="#94a3b8" />
+            <YAxis stroke="#94a3b8" />
 
-          <Tooltip
-            contentStyle={{ background: "#1e293b", border: "none" }}
-            labelFormatter={(label) =>
-              new Date(label).toLocaleString()
-            }
-          />
+            <Tooltip
+              contentStyle={{ background: "#1e293b", border: "none" }}
+              labelFormatter={(label) =>
+                new Date(label).toLocaleString()
+              }
+            />
 
-          <Line
-            type="monotone"
-            dataKey={dataKey}
-            stroke={color}
-            strokeWidth={2}
-            dot={false}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+            <Legend />
+
+            <Line
+              type="monotone"
+              dataKey="temperature"
+              stroke="#c71d1d"
+              strokeWidth={2}
+              dot={false}
+            />
+
+            <Line
+              type="monotone"
+              dataKey="humidity"
+              stroke="#1d92e6"
+
+              strokeWidth={2}
+              dot={false}
+            />
+
+            <Line
+              type="monotone"
+              dataKey="co"
+              stroke="#e4d18b"
+              strokeWidth={2}
+              dot={false}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
