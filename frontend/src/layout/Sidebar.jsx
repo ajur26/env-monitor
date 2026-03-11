@@ -31,11 +31,11 @@ export default function Sidebar() {
         borderRight: "1px solid #1e293b",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between", // góra + dół sidebaru
       }}
     >
       {/* GÓRNA CZĘŚĆ SIDEBAR */}
       <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+
         <div
           style={{
             fontSize: 20,
@@ -47,39 +47,41 @@ export default function Sidebar() {
           ENV-MONITOR
         </div>
 
+        {/* MENU */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <MenuItem to="/" icon={<FaHome size={16} />} label="Home" />
           <MenuItem to="/history" icon={<FaChartLine size={16} />} label="Historia" />
           <MenuItem to="/alarms" icon={<FaBell size={16} />} label="Alarmy" />
         </div>
-      </div>
 
-      {/* DOLNA CZĘŚĆ SIDEBAR – PANEL UŻYTKOWNIKA */}
-      <div
-        style={{
-          borderTop: "1px solid #1e293b",
-          paddingTop: 16,
-          display: "flex",
-          flexDirection: "column",
-          gap: 8,
-        }}
-      >
-        <div style={{ fontSize: 14, color: "#94a3b8" }}>
-          Zalogowany: <strong>Admin</strong>
-        </div>
-
-        <button
+        {/* SEKCJA UŻYTKOWNIKA */}
+        <div
           style={{
-            padding: "8px 12px",
-            borderRadius: 8,
-            border: "none",
-            background: "#1e293b",
-            color: "white",
-            cursor: "pointer",
+            borderTop: "1px solid #1e293b",
+            paddingTop: 16,
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
           }}
         >
-          Wyloguj
-        </button>
+          <div style={{ fontSize: 14, color: "#94a3b8" }}>
+            Zalogowany: <strong>Admin</strong>
+          </div>
+
+          <button
+            style={{
+              padding: "8px 12px",
+              borderRadius: 8,
+              border: "none",
+              background: "#1e293b",
+              color: "white",
+              cursor: "pointer",
+            }}
+          >
+            Wyloguj
+          </button>
+        </div>
+
       </div>
     </aside>
   );
