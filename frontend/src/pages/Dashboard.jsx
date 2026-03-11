@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Chart from "../components/Chart";
 import { apiFetch } from "../api/client";
+import Clock from "../components/Clock";
+import { FaTemperatureHigh, FaTint, FaSmog } from "react-icons/fa";
 
 function formatTs(ts) {
   if (!ts) return "-";
@@ -53,9 +55,7 @@ function SmallButton({ active, onClick, children }) {
       style={{
         padding: "8px 12px",
         borderRadius: 10,
-        border: active
-          ? "1px solid #38bdf8"
-          : "1px solid #334155",
+        border: active ? "1px solid #38bdf8" : "1px solid #334155",
         background: active ? "#0b1220" : "#111827",
         color: "white",
         cursor: "pointer",
@@ -126,9 +126,23 @@ export default function Dashboard() {
         fontFamily: "Inter, Arial, sans-serif",
       }}
     >
-      <div style={{ marginBottom: 20 }}>
-        <h1>ENV-MONITOR Dashboard</h1>
+<div style={{ marginBottom: 30 }}>
+
+      <div
+        style={{
+          fontSize: 14,
+          color: "#94a3b8",
+          marginBottom: 6
+        }}
+      >
+        Welcome back
       </div>
+
+      <h1 style={{ marginTop: 16 }}>
+        ENV-MONITOR Dashboard
+      </h1>
+
+    </div>
 
       <div
         style={{
@@ -157,19 +171,63 @@ export default function Dashboard() {
               CO STATUS: {coUi.label}
             </div>
 
-            <div style={{ fontSize: 32, fontWeight: 700 }}>
-              {latest?.temperature ?? "-"}°C
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 10
+              }}
+            >
+
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  fontSize: 32,
+                  fontWeight: 700
+                }}
+              >
+                <FaTemperatureHigh color="#c71d1d" />
+                {latest?.temperature ?? "-"}°C
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  fontSize: 32,
+                  fontWeight: 700
+                }}
+              >
+                <FaTint color="#1d92e6" />
+                {latest?.humidity ?? "-"}%
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  fontSize: 32,
+                  fontWeight: 700
+                }}
+              >
+                <FaSmog color="#e4d18b" />
+                {latest?.co ?? "-"} ppm
+              </div>
+
             </div>
-            <div>Humidity: {latest?.humidity ?? "-"}%</div>
-            <div>CO: {latest?.co ?? "-"} ppm</div>
+
             <div style={{ marginTop: 10, fontSize: 12, color: "#94a3b8" }}>
               {latest ? formatTs(latest.created_at) : "-"}
             </div>
           </Card>
         </div>
 
-        {/* PRAWA STRONA — WYKRESY */}
-        <div>
+        {/* PRAWA STRONA */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           <div style={{ marginBottom: 12, color: "#94a3b8", fontSize: 12 }}>
             Chart period
           </div>
@@ -178,7 +236,9 @@ export default function Dashboard() {
             <SmallButton active={period === "1h"} onClick={() => setPeriod("1h")}>
               1h
             </SmallButton>
+
             <span style={{ marginLeft: 10 }} />
+
             <SmallButton active={period === "24h"} onClick={() => setPeriod("24h")}>
               24h
             </SmallButton>
@@ -190,22 +250,23 @@ export default function Dashboard() {
             </div>
           )}
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 40 }}>
-            <Chart
-              title={`Temperature (${period})`}
-              data={chartData}
-              dataKey="temperature"
-            />
-            <Chart
-              title={`Humidity (${period})`}
-              data={chartData}
-              dataKey="humidity"
-            />
-            <Chart
-              title={`CO (${period})`}
-              data={chartData}
-              dataKey="co"
-            />
+          {/* WYKRES + ZEGAR W TEJ SAMEJ SEKCJI */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 220px",
+              gap: 20,
+              alignItems: "start",
+            }}
+          >
+            <div style={{ width: "100%", minWidth: 0 }}>
+              <Chart
+                title={`Environment measurements (${period})`}
+                data={chartData}
+              />
+            </div>
+
+            <Clock />
           </div>
         </div>
       </div>
