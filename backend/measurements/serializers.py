@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Measurement
+from .models import Measurement, Alarm
 
 
 class MeasurementSerializer(serializers.ModelSerializer):
@@ -23,3 +23,9 @@ class MeasurementSerializer(serializers.ModelSerializer):
             if value < 0 or value > 10000:
                 raise serializers.ValidationError("CO must be between 0 and 10000 ppm.")
         return value
+
+
+class AlarmSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Alarm
+        fields = "__all__"
