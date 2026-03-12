@@ -1,21 +1,23 @@
 from rest_framework import serializers
 from .models import Measurement
 
+
 class MeasurementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Measurement
-        fields = '__all__'
+        fields = "__all__"
+        read_only_fields = ["id", "created_at"]
 
     def validate_temperature(self, value):
         if value < -50 or value > 100:
             raise serializers.ValidationError("Temperature out of realistic range.")
         return value
-        
+
     def validate_humidity(self, value):
         if value < 0 or value > 100:
             raise serializers.ValidationError("Humidity must be between 0 and 100.")
         return value
-    
+
     def validate_co(self, value):
         if value is not None:
             if value < 0 or value > 10000:
