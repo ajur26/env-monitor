@@ -57,6 +57,7 @@ export default function Chart({ data, title }) {
             <Line
               type="monotone"
               dataKey="temperature"
+              name="Temperature"
               stroke="#c71d1d"
               strokeWidth={2}
               dot={false}
@@ -65,8 +66,8 @@ export default function Chart({ data, title }) {
             <Line
               type="monotone"
               dataKey="humidity"
+              name="Humidity"
               stroke="#1d92e6"
-
               strokeWidth={2}
               dot={false}
             />
@@ -74,6 +75,7 @@ export default function Chart({ data, title }) {
             <Line
               type="monotone"
               dataKey="co"
+              name="CO"
               stroke="#e4d18b"
               strokeWidth={2}
               dot={false}
