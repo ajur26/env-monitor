@@ -10,9 +10,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Measurement
+from .models import Measurement, Alarm
 from .permissions import IsUserOrDeviceApiKey
-from .serializers import MeasurementSerializer
+from .serializers import MeasurementSerializer, AlarmSerializer
 
 
 def co_status(value, thresholds):
@@ -120,3 +120,45 @@ class RecentMeasurementsView(APIView):
 
         serializer = MeasurementSerializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class LatestMeasurementsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        living_room = (
+            Measurement.objects
+            .filter(point="living_room")
+            .order_by("-created_at")
+            .first()
+        )
+
+        bedroom = (
+            Measurement.objects
+            .filter(point="bedroom")
+            .order_by("-created_at")
+            .first()
+        )
+
+        data = {
+            "living_room": {
+                "temperature": living_room.temperature if living_room else None,
+                "humidity": living_room.humidity if living_room else None,
+                "co": living_room.co if living_room else None,
+                "created_at": living_room.created_at if living_room else None,
+            },
+            "bedroom": {
+                "temperature": bedroom.temperature if bedroom else None,
+                "humidity": bedroom.humidity if bedroom else None,
+                "co": bedroom.co if bedroom else None,
+                "created_at": bedroom.created_at if bedroom else None,
+            },
+        }
+
+        return Response(data)
+    
+
+    class AlarmListView(generics.ListAPIView):
+        queryset = Alarm.objects.all().order_by("-created_at")
+        serializer_class = AlarmSerializer
+        permission_classes = [IsAuthenticated]
