@@ -24,8 +24,30 @@ class MeasurementSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("CO must be between 0 and 10000 ppm.")
         return value
 
+    def create(self, validated_data):
+        measurement = Measurement.objects.create(**validated_data)
 
-class AlarmSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Alarm
-        fields = "__all__"
+        co_value = validated_data.get("co")
+        point = validated_data.get("point")
+
+        if co_value is not None:
+
+            if co_value > 70:
+                Alarm.objects.create(
+                    point=point,
+                    temperature=validated_data.get("temperature"),
+                    humidity=validated_data.get("humidity"),
+                    co=co_value,
+                    message="CO danger level exceeded",
+                )
+
+            elif co_value > 30:
+                Alarm.objects.create(
+                    point=point,
+                    temperature=validated_data.get("temperature"),
+                    humidity=validated_data.get("humidity"),
+                    co=co_value,
+                    message="CO warning level exceeded",
+                )
+
+        return measurement
