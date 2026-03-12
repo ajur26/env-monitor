@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Chart from "../components/Chart";
 import { apiFetch } from "../api/client";
 import Clock from "../components/Clock";
@@ -36,7 +36,6 @@ function Card({ title, children, accent, headerRight }) {
           display: "flex",
           alignItems: "baseline",
           justifyContent: "space-between",
-          gap: 16,
           marginBottom: 14,
         }}
       >
@@ -68,206 +67,101 @@ function SmallButton({ active, onClick, children }) {
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { point } = useParams();
 
   const [measurements, setMeasurements] = useState([]);
   const [stats, setStats] = useState(null);
   const [chartData, setChartData] = useState([]);
   const [period, setPeriod] = useState("1h");
-  const [expanded, setExpanded] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   async function load() {
     try {
-      setLoading(true);
-
       const [mData, sData, rData] = await Promise.all([
-        apiFetch(`/measurements/?page=1`),
-        apiFetch(`/measurements/stats/`),
-        apiFetch(`/measurements/recent/?period=${period}`),
+        apiFetch(`/measurements/?point=${point}&page=1`),
+        apiFetch(`/measurements/stats/?point=${point}`),
+        apiFetch(`/measurements/recent/?period=${period}&point=${point}`),
       ]);
 
       setMeasurements(mData?.results ?? []);
       setStats(sData);
       setChartData(Array.isArray(rData) ? rData : []);
     } catch (err) {
-      console.error("Error loading data:", err);
-
-      if (err?.status === 401) {
-        navigate("/login", { replace: true });
-      }
-    } finally {
-      setLoading(false);
+      if (err?.status === 401) navigate("/login", { replace: true });
     }
   }
 
   useEffect(() => {
-    document.body.style.margin = "0";
-    document.body.style.background = "#0f172a";
-
     load();
     const id = setInterval(load, 15000);
     return () => clearInterval(id);
-  }, [period]);
+  }, [period, point]);
 
   const latest = measurements[0];
   const coUi = getCoUI(stats?.co_status);
 
-  const visibleCount = expanded ? 20 : 5;
-  const visibleMeasurements = measurements.slice(0, visibleCount);
-
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        padding: 40,
-        boxSizing: "border-box",
-        background: "#0f172a",
-        color: "white",
-        fontFamily: "Inter, Arial, sans-serif",
-      }}
-    >
-<div style={{ marginBottom: 30 }}>
-
-      <div
-        style={{
-          fontSize: 14,
-          color: "#94a3b8",
-          marginBottom: 6
-        }}
-      >
-        Welcome back
+    <div style={{ minHeight: "100vh", padding: 40, background: "#0f172a", color: "white" }}>
+      <div style={{ marginBottom: 30 }}>
+        <div style={{ fontSize: 14, color: "#94a3b8" }}>Welcome back</div>
+        <h1>
+          {point === "living_room" ? "Living Room" : "Bedroom"} Dashboard
+        </h1>
       </div>
 
-      <h1 style={{ marginTop: 16 }}>
-        ENV-MONITOR Dashboard
-      </h1>
-
-    </div>
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "350px 1fr",
-          gap: 40,
-          marginBottom: 60,
-        }}
-      >
-        {/* LEWA STRONA */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 30 }}>
-          <Card title="Last Measurement" accent={coUi.border}>
-            <div
-              style={{
-                padding: "6px 10px",
-                borderRadius: 999,
-                background: coUi.bg,
-                color: coUi.fg,
-                fontSize: 12,
-                fontWeight: 800,
-                marginBottom: 14,
-                border: `1px solid ${coUi.border}`,
-                display: "inline-block",
-              }}
-            >
-              CO STATUS: {coUi.label}
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 10
-              }}
-            >
-
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  fontSize: 32,
-                  fontWeight: 700
-                }}
-              >
-                <FaTemperatureHigh color="#c71d1d" />
-                {latest?.temperature ?? "-"}°C
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  fontSize: 32,
-                  fontWeight: 700
-                }}
-              >
-                <FaTint color="#1d92e6" />
-                {latest?.humidity ?? "-"}%
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  fontSize: 32,
-                  fontWeight: 700
-                }}
-              >
-                <FaSmog color="#e4d18b" />
-                {latest?.co ?? "-"} ppm
-              </div>
-
-            </div>
-
-            <div style={{ marginTop: 10, fontSize: 12, color: "#94a3b8" }}>
-              {latest ? formatTs(latest.created_at) : "-"}
-            </div>
-          </Card>
-        </div>
-
-        {/* PRAWA STRONA */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <div style={{ marginBottom: 12, color: "#94a3b8", fontSize: 12 }}>
-            Chart period
+      <div style={{ display: "grid", gridTemplateColumns: "350px 1fr", gap: 40 }}>
+        <Card title="Last Measurement" accent={coUi.border}>
+          <div
+            style={{
+              padding: "6px 10px",
+              borderRadius: 999,
+              background: coUi.bg,
+              color: coUi.fg,
+              fontSize: 12,
+              fontWeight: 800,
+              marginBottom: 14,
+              border: `1px solid ${coUi.border}`,
+            }}
+          >
+            CO STATUS: {coUi.label}
           </div>
 
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div style={{ fontSize: 32 }}>
+              <FaTemperatureHigh /> {latest?.temperature ?? "-"}°C
+            </div>
+
+            <div style={{ fontSize: 32 }}>
+              <FaTint /> {latest?.humidity ?? "-"}%
+            </div>
+
+            <div style={{ fontSize: 32 }}>
+              <FaSmog /> {latest?.co ?? "-"} ppm
+            </div>
+          </div>
+
+          <div style={{ marginTop: 10, fontSize: 12, color: "#94a3b8" }}>
+            {latest ? formatTs(latest.created_at) : "-"}
+          </div>
+        </Card>
+
+        <div>
           <div style={{ marginBottom: 20 }}>
             <SmallButton active={period === "1h"} onClick={() => setPeriod("1h")}>
               1h
             </SmallButton>
 
-            <span style={{ marginLeft: 10 }} />
-
-            <SmallButton active={period === "24h"} onClick={() => setPeriod("24h")}>
+            <SmallButton
+              active={period === "24h"}
+              onClick={() => setPeriod("24h")}
+              style={{ marginLeft: 10 }}
+            >
               24h
             </SmallButton>
           </div>
 
-          {loading && (
-            <div style={{ marginBottom: 20, color: "#94a3b8", fontSize: 12 }}>
-              Loading chart data...
-            </div>
-          )}
+          <Chart title={`Environment measurements (${period})`} data={chartData} />
 
-          {/* WYKRES + ZEGAR W TEJ SAMEJ SEKCJI */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 220px",
-              gap: 20,
-              alignItems: "start",
-            }}
-          >
-            <div style={{ width: "100%", minWidth: 0 }}>
-              <Chart
-                title={`Environment measurements (${period})`}
-                data={chartData}
-              />
-            </div>
-
-            <Clock />
-          </div>
+          <Clock />
         </div>
       </div>
     </div>
