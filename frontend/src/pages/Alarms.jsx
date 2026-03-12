@@ -11,13 +11,8 @@ export default function Alarms() {
 
   async function load() {
     try {
-      const data = await apiFetch("/measurements/?page=1");
-
-      const filtered = (data?.results ?? []).filter(
-        (m) => m.co_status === "warning" || m.co_status === "danger"
-      );
-
-      setAlarms(filtered);
+      const data = await apiFetch("/measurements/alarms/");
+      setAlarms(data);
     } catch (err) {
       console.error("Failed to load alarms:", err);
     }
@@ -44,8 +39,9 @@ export default function Alarms() {
           <thead>
             <tr style={{ textAlign: "left", color: "#94a3b8" }}>
               <th style={{ paddingBottom: 12 }}>Czas</th>
+              <th>Pomieszczenie</th>
               <th>CO</th>
-              <th>Status</th>
+              <th>Opis</th>
             </tr>
           </thead>
 
@@ -53,8 +49,9 @@ export default function Alarms() {
             {alarms.map((a) => (
               <tr key={a.id}>
                 <td style={{ padding: "8px 0" }}>{formatTs(a.created_at)}</td>
+                <td>{a.point}</td>
                 <td>{a.co} ppm</td>
-                <td>{a.co_status}</td>
+                <td>{a.message}</td>
               </tr>
             ))}
           </tbody>
