@@ -1,4 +1,7 @@
 from rest_framework import serializers
+from django.utils import timezone
+from datetime import timedelta
+
 from .models import Measurement, Alarm
 
 
@@ -32,22 +35,31 @@ class MeasurementSerializer(serializers.ModelSerializer):
 
         if co_value is not None:
 
-            if co_value > 70:
-                Alarm.objects.create(
-                    point=point,
-                    temperature=validated_data.get("temperature"),
-                    humidity=validated_data.get("humidity"),
-                    co=co_value,
-                    message="CO danger level exceeded",
-                )
+            thresholds_warning = 30
+            thresholds_danger = 70
 
-            elif co_value > 30:
-                Alarm.objects.create(
+            message = None
+
+            if co_value > thresholds_danger:
+                message = "CO danger level exceeded"
+            elif co_value > thresholds_warning:
+                message = "CO warning level exceeded"
+
+            if message:
+                one_minute_ago = timezone.now() - timedelta(minutes=1)
+
+                recent_alarm_exists = Alarm.objects.filter(
                     point=point,
-                    temperature=validated_data.get("temperature"),
-                    humidity=validated_data.get("humidity"),
-                    co=co_value,
-                    message="CO warning level exceeded",
-                )
+                    created_at__gte=one_minute_ago
+                ).exists()
+
+                if not recent_alarm_exists:
+                    Alarm.objects.create(
+                        point=point,
+                        temperature=validated_data.get("temperature"),
+                        humidity=validated_data.get("humidity"),
+                        co=co_value,
+                        message=message,
+                    )
 
         return measurement
