@@ -137,6 +137,23 @@ export default function Dashboard() {
         <h1 style={{ marginTop: 16 }}>
           {point === "living_room" ? "Living Room" : "Bedroom"} Dashboard
         </h1>
+
+        {/* PRZEŁĄCZNIK POMIESZCZEŃ */}
+        <div style={{ marginTop: 20, display: "flex", gap: 10 }}>
+          <SmallButton
+            active={point === "living_room"}
+            onClick={() => navigate("/rooms/living_room")}
+          >
+            Living Room
+          </SmallButton>
+
+          <SmallButton
+            active={point === "bedroom"}
+            onClick={() => navigate("/rooms/bedroom")}
+          >
+            Bedroom
+          </SmallButton>
+        </div>
       </div>
 
       <div
