@@ -4,6 +4,7 @@ from .views import (
     MeasurementStatsView,
     RecentMeasurementsView,
     LatestMeasurementsView,
+    AlarmListView
 )
 
 urlpatterns = [
@@ -11,4 +12,5 @@ urlpatterns = [
     path("stats/", MeasurementStatsView.as_view(), name="measurement-stats"),
     path("recent/", RecentMeasurementsView.as_view(), name="recent-measurements"),
     path("latest/", LatestMeasurementsView.as_view(), name="latest-measurements"),
+    path("alarms/", AlarmListView.as_view(), name="alarms"),
 ]
