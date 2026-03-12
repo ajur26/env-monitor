@@ -32,8 +32,12 @@ class MeasurementListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         queryset = Measurement.objects.all().order_by("-created_at")
 
+        point = self.request.query_params.get("point")
         date_from = self.request.query_params.get("from")
         date_to = self.request.query_params.get("to")
+
+        if point:
+            queryset = queryset.filter(point=point)
 
         if date_from:
             parsed_from = parse_date(date_from)
@@ -65,6 +69,18 @@ class MeasurementStatsView(APIView):
         last_co = last_measurement.co if last_measurement else None
         status_str = co_status(last_co, thresholds)
 
+        last_hour_avg = last_hour_qs.aggregate(
+            temperature=Avg("temperature"),
+            humidity=Avg("humidity"),
+            co=Avg("co")
+        )
+
+        last_24h_avg = last_24h_qs.aggregate(
+            temperature=Avg("temperature"),
+            humidity=Avg("humidity"),
+            co=Avg("co")
+        )
+
         data = {
             "co_status": status_str,
             "co_thresholds": thresholds,
@@ -74,16 +90,8 @@ class MeasurementStatsView(APIView):
                 "co": last_co,
                 "created_at": last_measurement.created_at if last_measurement else None,
             },
-            "last_hour_avg": {
-                "temperature": last_hour_qs.aggregate(Avg("temperature"))["temperature__avg"],
-                "humidity": last_hour_qs.aggregate(Avg("humidity"))["humidity__avg"],
-                "co": last_hour_qs.aggregate(Avg("co"))["co__avg"],
-            },
-            "last_24h_avg": {
-                "temperature": last_24h_qs.aggregate(Avg("temperature"))["temperature__avg"],
-                "humidity": last_24h_qs.aggregate(Avg("humidity"))["humidity__avg"],
-                "co": last_24h_qs.aggregate(Avg("co"))["co__avg"],
-            },
+            "last_hour_avg": last_hour_avg,
+            "last_24h_avg": last_24h_avg,
         }
 
         return Response(data)
@@ -91,9 +99,11 @@ class MeasurementStatsView(APIView):
 
 class RecentMeasurementsView(APIView):
     permission_classes = [IsAuthenticated]
-    
+
     def get(self, request):
         period = request.query_params.get("period", "1h")
+        point = request.query_params.get("point")
+
         now = timezone.now()
 
         if period == "24h":
@@ -101,11 +111,12 @@ class RecentMeasurementsView(APIView):
         else:
             since = now - timedelta(hours=1)
 
-        queryset = (
-            Measurement.objects
-            .filter(created_at__gte=since)
-            .order_by("created_at")
-        )
+        queryset = Measurement.objects.filter(created_at__gte=since)
+
+        if point:
+            queryset = queryset.filter(point=point)
+
+        queryset = queryset.order_by("created_at")
 
         serializer = MeasurementSerializer(queryset, many=True)
         return Response(serializer.data)
