@@ -142,14 +142,14 @@ export default function Dashboard() {
         <div style={{ marginTop: 20, display: "flex", gap: 10 }}>
           <SmallButton
             active={point === "living_room"}
-            onClick={() => navigate("/rooms/living_room")}
+            onClick={() => navigate("/room/living_room")}
           >
             Living Room
           </SmallButton>
 
           <SmallButton
             active={point === "bedroom"}
-            onClick={() => navigate("/rooms/bedroom")}
+            onClick={() => navigate("/room/bedroom")}
           >
             Bedroom
           </SmallButton>
