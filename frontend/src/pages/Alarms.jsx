@@ -8,13 +8,29 @@ function formatTs(ts) {
 
 export default function Alarms() {
   const [alarms, setAlarms] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   async function load() {
     try {
+      setLoading(true);
+      setError(null);
+
       const data = await apiFetch("/measurements/alarms/");
-      setAlarms(data);
+
+      // obsługa paginacji DRF lub zwykłej listy
+      const list = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.results)
+        ? data.results
+        : [];
+
+      setAlarms(list);
     } catch (err) {
       console.error("Failed to load alarms:", err);
+      setError("Failed to load alarms");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -33,29 +49,35 @@ export default function Alarms() {
           borderRadius: 14,
         }}
       >
-        {alarms.length === 0 && <div>Brak alarmów</div>}
+        {loading && <div>Loading...</div>}
+        {error && <div style={{ color: "red" }}>{error}</div>}
+        {!loading && alarms.length === 0 && <div>Brak alarmów</div>}
 
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr style={{ textAlign: "left", color: "#94a3b8" }}>
-              <th style={{ paddingBottom: 12 }}>Czas</th>
-              <th>Pomieszczenie</th>
-              <th>CO</th>
-              <th>Opis</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {alarms.map((a) => (
-              <tr key={a.id}>
-                <td style={{ padding: "8px 0" }}>{formatTs(a.created_at)}</td>
-                <td>{a.point}</td>
-                <td>{a.co} ppm</td>
-                <td>{a.message}</td>
+        {!loading && alarms.length > 0 && (
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ textAlign: "left", color: "#94a3b8" }}>
+                <th style={{ paddingBottom: 12 }}>Czas</th>
+                <th>Pomieszczenie</th>
+                <th>CO</th>
+                <th>Opis</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {alarms.map((a) => (
+                <tr key={a.id}>
+                  <td style={{ padding: "8px 0" }}>
+                    {formatTs(a.created_at)}
+                  </td>
+                  <td>{a.point}</td>
+                  <td>{a.co} ppm</td>
+                  <td>{a.message}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
