@@ -56,16 +56,28 @@ class MeasurementStatsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        point = request.query_params.get("point")
+
         now = timezone.now()
         one_hour_ago = now - timedelta(hours=1)
         twenty_four_hours_ago = now - timedelta(hours=24)
 
-        last_measurement = Measurement.objects.order_by("-created_at").first()
+        queryset = Measurement.objects.all()
 
-        last_hour_qs = Measurement.objects.filter(created_at__gte=one_hour_ago)
-        last_24h_qs = Measurement.objects.filter(created_at__gte=twenty_four_hours_ago)
+        if point:
+            queryset = queryset.filter(point=point)
 
-        thresholds = getattr(settings, "CO_THRESHOLDS", {"ok_max": 30, "warning_max": 70})
+        last_measurement = queryset.order_by("-created_at").first()
+
+        last_hour_qs = queryset.filter(created_at__gte=one_hour_ago)
+        last_24h_qs = queryset.filter(created_at__gte=twenty_four_hours_ago)
+
+        thresholds = getattr(
+            settings,
+            "CO_THRESHOLDS",
+            {"ok_max": 30, "warning_max": 70}
+        )
+
         last_co = last_measurement.co if last_measurement else None
         status_str = co_status(last_co, thresholds)
 
@@ -156,9 +168,9 @@ class LatestMeasurementsView(APIView):
         }
 
         return Response(data)
-    
 
-    class AlarmListView(generics.ListAPIView):
-        queryset = Alarm.objects.all().order_by("-created_at")
-        serializer_class = AlarmSerializer
-        permission_classes = [IsAuthenticated]
+
+class AlarmListView(generics.ListAPIView):
+    queryset = Alarm.objects.all().order_by("-created_at")
+    serializer_class = AlarmSerializer
+    permission_classes = [IsAuthenticated]
