@@ -1,32 +1,30 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Layout from "./components/layout/Layout";
+import { Routes, Route, Navigate } from "react-router-dom";
+import ProtectedRoute from "./auth/ProtectedRoute";
+import Layout from "./layout/Layout";
 import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
 import History from "./pages/History";
 import Alarms from "./pages/Alarms";
-import Login from "./pages/Login";
-import ProtectedRoute from "./auth/ProtectedRoute";
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <Routes>
+      <Route path="/login" element={<Login />} />
 
-        <Route path="/login" element={<Login />} />
+      <Route element={<ProtectedRoute />}>
+        <Route element={<Layout />}>
 
-        <Route element={<ProtectedRoute />}>
-          <Route element={<Layout />}>
+          <Route path="/" element={<Navigate to="/room/living_room" />} />
 
-            <Route path="/" element={<Navigate to="/rooms/living_room" />} />
+          <Route path="/room/:point" element={<Dashboard />} />
 
-            <Route path="/rooms/:point" element={<Dashboard />} />
+          <Route path="/history" element={<History />} />
+          <Route path="/alarms" element={<Alarms />} />
 
-            <Route path="/history" element={<History />} />
-            <Route path="/alarms" element={<Alarms />} />
-
-          </Route>
         </Route>
+      </Route>
 
-      </Routes>
-    </BrowserRouter>
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
