@@ -12,19 +12,46 @@ function formatTs(ts) {
 
 function getCoUI(status) {
   if (status === "ok")
-    return { label: "OK", border: "#22c55e", bg: "#052e16", fg: "#dcfce7" };
+    return {
+      label: "OK",
+      border: "#22c55e",
+      bg: "#052e16",
+      fg: "#dcfce7",
+      gradient: "linear-gradient(135deg, #020617 0%, #020617 27%, #064e3b 110%)",
+    };
+
   if (status === "warning")
-    return { label: "WARNING", border: "#f59e0b", bg: "#451a03", fg: "#fffbeb" };
+    return {
+      label: "WARNING",
+      border: "#f59e0b",
+      bg: "#451a03",
+      fg: "#fffbeb",
+      gradient: "linear-gradient(135deg, #020617 0%, #020617 27%, #78350f 110%)",
+    };
+
   if (status === "danger")
-    return { label: "DANGER", border: "#ef4444", bg: "#450a0a", fg: "#fee2e2" };
-  return { label: "UNKNOWN", border: "#334155", bg: "#0b1220", fg: "#e2e8f0" };
+    return {
+      label: "DANGER",
+      border: "#ef4444",
+      bg: "#450a0a",
+      fg: "#fee2e2",
+      gradient: "linear-gradient(135deg, #020617 0%, #020617 27%, #7f1d1d 110%)",
+    };
+
+  return {
+    label: "UNKNOWN",
+    border: "#334155",
+    bg: "#0b1220",
+    fg: "#e2e8f0",
+    gradient: "linear-gradient(135deg, #020617 0%, #020617 100%)",
+  };
 }
 
-function Card({ title, children, accent, headerRight }) {
+function Card({ title, children, accent, headerRight, gradient }) {
   return (
     <div
       style={{
-        background: "#1e293b",
+        background: gradient ? gradient : "#1e293b",
         padding: 24,
         borderRadius: 14,
         boxShadow: "0 6px 20px rgba(0,0,0,0.4)",
@@ -55,10 +82,14 @@ function SmallButton({ active, onClick, children }) {
       style={{
         padding: "8px 12px",
         borderRadius: 10,
-        border: active ? "1px solid #38bdf8" : "1px solid #334155",
-        background: active ? "#0b1220" : "#111827",
-        color: "white",
+        border: active ? "1px solid #e5e7eb" : "1px solid #334155",
+        background: active ? "#e5e7eb" : "#111827",
+        color: active ? "#020617" : "white",
         cursor: "pointer",
+        boxShadow: active
+          ? "0 0 6px rgba(255,255,255,0.25), 0 0 10px rgba(255,255,255,0.15)"
+          : "none",
+        transition: "all 0.2s ease",
       }}
     >
       {children}
@@ -118,7 +149,7 @@ export default function Dashboard() {
         minHeight: "100vh",
         padding: 40,
         boxSizing: "border-box",
-        background: "#0f172a",
+        background: "#0f0113",
         color: "white",
         fontFamily: "Inter, Arial, sans-serif",
       }}
@@ -166,7 +197,11 @@ export default function Dashboard() {
       >
         {/* LEWA STRONA */}
         <div style={{ display: "flex", flexDirection: "column", gap: 30 }}>
-          <Card title="Last Measurement" accent={coUi.border}>
+          <Card
+            title="Last Measurement"
+            accent={coUi.border}
+            gradient={coUi.gradient}
+          >
             <div
               style={{
                 padding: "6px 10px",
@@ -229,7 +264,6 @@ export default function Dashboard() {
                 {latest?.co ?? "-"} ppm
               </div>
             </div>
-
           </Card>
         </div>
 
