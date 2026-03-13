@@ -230,9 +230,6 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div style={{ marginTop: 10, fontSize: 12, color: "#94a3b8" }}>
-              {latest ? formatTs(latest.created_at) : "-"}
-            </div>
           </Card>
         </div>
 
