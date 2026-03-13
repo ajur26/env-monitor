@@ -22,9 +22,8 @@ class MeasurementSerializer(serializers.ModelSerializer):
         return value
 
     def validate_co(self, value):
-        if value is not None:
-            if value < 0 or value > 10000:
-                raise serializers.ValidationError("CO must be between 0 and 10000 ppm.")
+        if value is not None and (value < 0 or value > 10000):
+            raise serializers.ValidationError("CO must be between 0 and 10000 ppm.")
         return value
 
     def create(self, validated_data):
@@ -34,7 +33,6 @@ class MeasurementSerializer(serializers.ModelSerializer):
         point = validated_data.get("point")
 
         if co_value is not None:
-
             thresholds_warning = 30
             thresholds_danger = 70
 
@@ -63,3 +61,9 @@ class MeasurementSerializer(serializers.ModelSerializer):
                     )
 
         return measurement
+
+
+class AlarmSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Alarm
+        fields = "__all__"
