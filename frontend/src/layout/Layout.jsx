@@ -9,7 +9,7 @@ export default function Layout() {
         display: "grid",
         gridTemplateColumns: "180px 1fr",
         minHeight: "100vh",
-        background: "#0e131f",
+        background: "#000000",
         color: "white",
       }}
     >
@@ -18,7 +18,7 @@ export default function Layout() {
       <main
         style={{
           padding: 32,
-          borderLeft: "1px solid #1e293b",
+          borderLeft: "1px solid #000000",
         }}
       >
         <Outlet />

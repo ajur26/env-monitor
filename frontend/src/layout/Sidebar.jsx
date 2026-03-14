@@ -12,8 +12,8 @@ function MenuItem({ to, icon, label }) {
         padding: "12px 16px",
         borderRadius: 10,
         textDecoration: "none",
-        background: isActive ? "#1e293b" : "transparent",
-        color: isActive ? "white" : "#94a3b8",
+        background: isActive ? "#1f1f1f" : "transparent",
+        color: isActive ? "white" : "#ffffff",
         fontWeight: isActive ? 600 : 400,
       })}
     >
@@ -28,7 +28,7 @@ export default function Sidebar() {
     <aside
       style={{
         padding: 20,
-        borderRight: "1px solid #1e293b",
+        borderRight: "1px solid #ffffff",
         display: "flex",
         flexDirection: "column",
       }}
@@ -40,7 +40,7 @@ export default function Sidebar() {
           style={{
             fontSize: 20,
             fontWeight: 700,
-            borderBottom: "1px solid #1e293b",
+            borderBottom: "1px solid #ffffff",
             paddingBottom: 12,
           }}
         >
@@ -50,22 +50,22 @@ export default function Sidebar() {
         {/* MENU */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <MenuItem to="/" icon={<FaHome size={16} />} label="Home" />
-          <MenuItem to="/history" icon={<FaChartLine size={16} />} label="Historia" />
-          <MenuItem to="/alarms" icon={<FaBell size={16} />} label="Alarmy" />
+          <MenuItem to="/history" icon={<FaChartLine size={16} />} label="History" />
+          <MenuItem to="/alarms" icon={<FaBell size={16} />} label="Alarms" />
         </div>
 
         {/* SEKCJA UŻYTKOWNIKA */}
         <div
           style={{
-            borderTop: "1px solid #1e293b",
+            borderTop: "1px solid #ffffff",
             paddingTop: 16,
             display: "flex",
             flexDirection: "column",
             gap: 8,
           }}
         >
-          <div style={{ fontSize: 14, color: "#94a3b8" }}>
-            Zalogowany: <strong>Admin</strong>
+          <div style={{ fontSize: 14, color: "#ffffff" }}>
+            Logged in: <strong>Admin</strong>
           </div>
 
           <button
@@ -73,12 +73,12 @@ export default function Sidebar() {
               padding: "8px 12px",
               borderRadius: 8,
               border: "none",
-              background: "#1e293b",
+              background: "#1f1f1f",
               color: "white",
               cursor: "pointer",
             }}
           >
-            Wyloguj
+            Log out
           </button>
         </div>
 

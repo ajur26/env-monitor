@@ -19,7 +19,7 @@ export default function Chart({ data, title }) {
       style={{
         width: "100%",
         height: 380,
-        background: "#1e293b",
+        background: "#000000",
         borderRadius: 14,
         boxShadow: "0 6px 20px rgba(0,0,0,0.4)",
         boxSizing: "border-box",
@@ -35,7 +35,7 @@ export default function Chart({ data, title }) {
       <div style={{ width: "100%", height: "320px" }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
-            <CartesianGrid stroke="#334155" strokeDasharray="3 3" />
+            <CartesianGrid stroke="#484848" strokeDasharray="3 3" />
 
             <XAxis
               dataKey="created_at"

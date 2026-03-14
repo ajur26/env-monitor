@@ -18,14 +18,14 @@ export default function Clock() {
   return (
     <div
       style={{
-        background: "#1e293b",
+        background: "#000000",
         padding: 20,
         borderRadius: 14,
         boxShadow: "0 6px 20px rgba(0,0,0,0.4)",
         textAlign: "center",
       }}
     >
-      <div style={{ color: "#94a3b8", marginBottom: 10 }}>
+      <div style={{ color: "#ffffff", marginBottom: 10 }}>
         Date / Time
       </div>
 
@@ -48,7 +48,7 @@ export default function Clock() {
         {isDay ? (
           <FaSun color="#facc15" size={22} />
         ) : (
-          <FaMoon color="#60a5fa" size={22} />
+          <FaMoon color="#f1ea9e" size={22} />
         )}
       </div>
     </div>

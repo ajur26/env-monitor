@@ -17,7 +17,7 @@ function getCoUI(status) {
       border: "#22c55e",
       bg: "#052e16",
       fg: "#dcfce7",
-      gradient: "linear-gradient(135deg, #020617 0%, #020617 27%, #064e3b 110%)",
+      gradient: "linear-gradient(135deg, #000000 0%, #000000 30%, #064e3b 150%)",
     };
 
   if (status === "warning")
@@ -26,7 +26,7 @@ function getCoUI(status) {
       border: "#f59e0b",
       bg: "#451a03",
       fg: "#fffbeb",
-      gradient: "linear-gradient(135deg, #020617 0%, #020617 27%, #78350f 110%)",
+      gradient: "linear-gradient(135deg, #000000 0%, #000000 30%, #78350f 150%)",
     };
 
   if (status === "danger")
@@ -35,7 +35,7 @@ function getCoUI(status) {
       border: "#ef4444",
       bg: "#450a0a",
       fg: "#fee2e2",
-      gradient: "linear-gradient(135deg, #020617 0%, #020617 27%, #7f1d1d 110%)",
+      gradient: "linear-gradient(135deg, #000000 0%, #000000 30%, #7f1d1d 150%)",
     };
 
   return {
@@ -43,7 +43,7 @@ function getCoUI(status) {
     border: "#334155",
     bg: "#0b1220",
     fg: "#e2e8f0",
-    gradient: "linear-gradient(135deg, #020617 0%, #020617 100%)",
+    gradient: "linear-gradient(135deg, #1f1f1f 0%, #1f1f1f 100%)",
   };
 }
 
@@ -82,8 +82,8 @@ function SmallButton({ active, onClick, children }) {
       style={{
         padding: "8px 12px",
         borderRadius: 10,
-        border: active ? "1px solid #e5e7eb" : "1px solid #334155",
-        background: active ? "#e5e7eb" : "#111827",
+        border: active ? "1px solid #e5e7eb" : "1px solid #ffffff",
+        background: active ? "#e5e7eb" : "#000000",
         color: active ? "#020617" : "white",
         cursor: "pointer",
         boxShadow: active
@@ -149,7 +149,7 @@ export default function Dashboard() {
         minHeight: "100vh",
         padding: 40,
         boxSizing: "border-box",
-        background: "#0f0113",
+        background: "#0d0d0d",
         color: "white",
         fontFamily: "Inter, Arial, sans-serif",
       }}
@@ -158,7 +158,7 @@ export default function Dashboard() {
         <div
           style={{
             fontSize: 14,
-            color: "#94a3b8",
+            color: "#ffffff",
             marginBottom: 6,
           }}
         >
@@ -269,7 +269,7 @@ export default function Dashboard() {
 
         {/* PRAWA STRONA */}
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <div style={{ marginBottom: 12, color: "#94a3b8", fontSize: 12 }}>
+          <div style={{ marginBottom: 12, color: "#ffffff", fontSize: 12 }}>
             Chart period
           </div>
 
