@@ -21,7 +21,9 @@ export default function Chart({ data, title }) {
         height: 380,
         background: "#000000",
         borderRadius: 14,
-        boxShadow: "0 6px 20px rgba(0,0,0,0.4)",
+        boxShadow:
+          "0 6px 20px rgba(0,0,0,0.4), 0 0 8px rgba(255,255,255,0.15)",
+        border: "1px solid rgba(255,255,255,0.6)",
         boxSizing: "border-box",
         padding: 20,
       }}
@@ -46,7 +48,11 @@ export default function Chart({ data, title }) {
             <YAxis stroke="#94a3b8" />
 
             <Tooltip
-              contentStyle={{ background: "#1e293b", border: "none" }}
+              contentStyle={{
+                background: "#1e293b",
+                border: "1px solid rgba(255,255,255,0.2)",
+                borderRadius: 8,
+              }}
               labelFormatter={(label) =>
                 new Date(label).toLocaleString()
               }
