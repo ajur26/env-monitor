@@ -15,6 +15,9 @@ from .permissions import IsUserOrDeviceApiKey
 from .serializers import MeasurementSerializer, AlarmSerializer
 
 
+# ======================
+# CO STATUS (na podstawie voltage)
+# ======================
 def co_status(value, thresholds):
     if value is None:
         return "unknown"
@@ -25,6 +28,9 @@ def co_status(value, thresholds):
     return "danger"
 
 
+# ======================
+# LIST + CREATE (ESP POST tutaj)
+# ======================
 class MeasurementListCreateView(generics.ListCreateAPIView):
     serializer_class = MeasurementSerializer
     permission_classes = [IsUserOrDeviceApiKey]
@@ -52,6 +58,9 @@ class MeasurementListCreateView(generics.ListCreateAPIView):
         return queryset
 
 
+# ======================
+# STATYSTYKI
+# ======================
 class MeasurementStatsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -75,22 +84,24 @@ class MeasurementStatsView(APIView):
         thresholds = getattr(
             settings,
             "CO_THRESHOLDS",
-            {"ok_max": 30, "warning_max": 70}
+            {"ok_max": 0.4, "warning_max": 1.0}  # voltage!
         )
 
-        last_co = last_measurement.co if last_measurement else None
+        last_co = last_measurement.co_voltage if last_measurement else None
         status_str = co_status(last_co, thresholds)
 
         last_hour_avg = last_hour_qs.aggregate(
             temperature=Avg("temperature"),
             humidity=Avg("humidity"),
-            co=Avg("co")
+            pressure=Avg("pressure"),
+            co_voltage=Avg("co_voltage"),
         )
 
         last_24h_avg = last_24h_qs.aggregate(
             temperature=Avg("temperature"),
             humidity=Avg("humidity"),
-            co=Avg("co")
+            pressure=Avg("pressure"),
+            co_voltage=Avg("co_voltage"),
         )
 
         data = {
@@ -99,7 +110,9 @@ class MeasurementStatsView(APIView):
             "last_measurement": {
                 "temperature": last_measurement.temperature if last_measurement else None,
                 "humidity": last_measurement.humidity if last_measurement else None,
-                "co": last_co,
+                "pressure": last_measurement.pressure if last_measurement else None,
+                "co_voltage": last_co,
+                "co_status": last_measurement.co_status if last_measurement else None,
                 "created_at": last_measurement.created_at if last_measurement else None,
             },
             "last_hour_avg": last_hour_avg,
@@ -109,6 +122,9 @@ class MeasurementStatsView(APIView):
         return Response(data)
 
 
+# ======================
+# DO WYKRESÓW
+# ======================
 class RecentMeasurementsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -134,6 +150,9 @@ class RecentMeasurementsView(APIView):
         return Response(serializer.data)
 
 
+# ======================
+# OSTATNIE POMIARY
+# ======================
 class LatestMeasurementsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -152,24 +171,29 @@ class LatestMeasurementsView(APIView):
             .first()
         )
 
+        def format_data(obj):
+            if not obj:
+                return None
+            return {
+                "temperature": obj.temperature,
+                "humidity": obj.humidity,
+                "pressure": obj.pressure,
+                "co_voltage": obj.co_voltage,
+                "co_status": obj.co_status,
+                "created_at": obj.created_at,
+            }
+
         data = {
-            "living_room": {
-                "temperature": living_room.temperature if living_room else None,
-                "humidity": living_room.humidity if living_room else None,
-                "co": living_room.co if living_room else None,
-                "created_at": living_room.created_at if living_room else None,
-            },
-            "bedroom": {
-                "temperature": bedroom.temperature if bedroom else None,
-                "humidity": bedroom.humidity if bedroom else None,
-                "co": bedroom.co if bedroom else None,
-                "created_at": bedroom.created_at if bedroom else None,
-            },
+            "living_room": format_data(living_room),
+            "bedroom": format_data(bedroom),
         }
 
         return Response(data)
 
 
+# ======================
+# ALARMY
+# ======================
 class AlarmListView(generics.ListAPIView):
     queryset = Alarm.objects.all().order_by("-created_at")
     serializer_class = AlarmSerializer
