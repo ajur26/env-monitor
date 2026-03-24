@@ -1,0 +1,40 @@
+:root {
+  --bg-main: #171a1c;
+
+  --bg-panel: #0c0d0d;
+  --bg-panel-2: #161b1f;
+
+  --border-main: #2f3a40;
+  --border-light: #4b5563;
+
+  --text-main: #e6edf3;
+  --text-muted: #9aa4ad;
+
+  --accent-blue: #7dd3fc;
+  --accent-green: #4ade80;
+  --accent-red: #f87171;
+  --accent-yellow: #facc15;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-family: system-ui, sans-serif;
+}
+
+nav a {
+  color: var(--text-main);
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+nav a:hover {
+  background: var(--bg-panel-2);
+}
+
+nav a.active {
+  background: var(--bg-panel-2);
+  border: 1px solid var(--border-main);
+}
