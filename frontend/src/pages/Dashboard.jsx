@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Chart from "../components/Chart";
 import { apiFetch } from "../api/client";
-import Clock from "../components/Clock";
-import { FaTemperatureHigh, FaTint, FaSmog } from "react-icons/fa";
-
-function formatTs(ts) {
-  if (!ts) return "-";
-  return new Date(ts).toLocaleString();
-}
+import {
+  FaTemperatureHigh,
+  FaTint,
+  FaSmog,
+} from "react-icons/fa";
+import { FaGaugeHigh } from "react-icons/fa6";
 
 function getCoUI(status) {
   if (status === "ok")
@@ -17,7 +16,7 @@ function getCoUI(status) {
       border: "#22c55e",
       bg: "#052e16",
       fg: "#dcfce7",
-      gradient: "linear-gradient(135deg, #000000 0%, #000000 30%, #064e3b 150%)",
+      gradient: "var(--bg-panel)",
     };
 
   if (status === "warning")
@@ -26,7 +25,7 @@ function getCoUI(status) {
       border: "#f59e0b",
       bg: "#451a03",
       fg: "#fffbeb",
-      gradient: "linear-gradient(135deg, #000000 0%, #000000 30%, #78350f 150%)",
+      gradient: "var(--bg-panel)",
     };
 
   if (status === "danger")
@@ -35,15 +34,15 @@ function getCoUI(status) {
       border: "#ef4444",
       bg: "#450a0a",
       fg: "#fee2e2",
-      gradient: "linear-gradient(135deg, #000000 0%, #000000 30%, #7f1d1d 150%)",
+      gradient: "var(--bg-panel)",
     };
 
   return {
     label: "UNKNOWN",
-    border: "#334155",
-    bg: "#0b1220",
-    fg: "#e2e8f0",
-    gradient: "linear-gradient(135deg, #1f1f1f 0%, #1f1f1f 100%)",
+    border: "var(--border-soft)",
+    bg: "var(--bg-main)",
+    fg: "var(--text-main)",
+    gradient: "var(--bg-panel)",
   };
 }
 
@@ -51,11 +50,15 @@ function Card({ title, children, accent, headerRight, gradient }) {
   return (
     <div
       style={{
-        background: gradient ? gradient : "#1e293b",
+        background: gradient ? gradient : "var(--bg-panel)",
         padding: 24,
         borderRadius: 14,
-        boxShadow: "0 6px 20px rgba(0,0,0,0.4)",
-        border: accent ? `1px solid ${accent}` : "1px solid transparent",
+        border: accent
+          ? `1px solid ${accent}`
+          : "1px solid var(--border-soft)",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <div
@@ -67,7 +70,7 @@ function Card({ title, children, accent, headerRight, gradient }) {
           marginBottom: 14,
         }}
       >
-        <h3 style={{ margin: 0, color: "#cbd5e1" }}>{title}</h3>
+        <h3 style={{ margin: 0, color: "var(--text-main)" }}>{title}</h3>
         {headerRight}
       </div>
       {children}
@@ -82,18 +85,47 @@ function SmallButton({ active, onClick, children }) {
       style={{
         padding: "8px 12px",
         borderRadius: 10,
-        border: active ? "1px solid #e5e7eb" : "1px solid #ffffff",
-        background: active ? "#e5e7eb" : "#000000",
-        color: active ? "#020617" : "white",
+        border: active
+          ? "1px solid var(--border-main)"
+          : "1px solid var(--border-soft)",
+        background: active ? "var(--button-active)" : "var(--button-bg)",
+        color: active ? "var(--button-active-text)" : "var(--text-main)",
         cursor: "pointer",
-        boxShadow: active
-          ? "0 0 6px rgba(255,255,255,0.25), 0 0 10px rgba(255,255,255,0.15)"
-          : "none",
         transition: "all 0.2s ease",
+        fontWeight: active ? 600 : 500,
       }}
     >
       {children}
     </button>
+  );
+}
+
+function MeasurementRow({ icon, value, unit }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        fontSize: 32,
+        fontWeight: 700,
+        color: "var(--text-main)",
+      }}
+    >
+      <span
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minWidth: 32,
+        }}
+      >
+        {icon}
+      </span>
+      <span>
+        {value} {unit}
+      </span>
+    </div>
   );
 }
 
@@ -133,7 +165,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     document.body.style.margin = "0";
-    document.body.style.background = "#0f172a";
+    document.body.style.background = "var(--bg-main)";
 
     load();
     const id = setInterval(load, 15000);
@@ -149,54 +181,73 @@ export default function Dashboard() {
         minHeight: "100vh",
         padding: 40,
         boxSizing: "border-box",
-        background: "#0d0d0d",
-        color: "white",
-        fontFamily: "Inter, Arial, sans-serif",
+        background: "var(--bg-main)",
+        color: "var(--text-main)",
       }}
     >
       <div style={{ marginBottom: 30 }}>
-        <div
-          style={{
-            fontSize: 14,
-            color: "#ffffff",
-            marginBottom: 6,
-          }}
-        >
-          Welcome back
-        </div>
-
-        <h1 style={{ marginTop: 16 }}>
+        <h1 style={{ marginTop: 16, color: "var(--text-main)" }}>
           {point === "living_room" ? "Living Room" : "Bedroom"} Dashboard
         </h1>
+      </div>
 
-        {/* PRZEŁĄCZNIK POMIESZCZEŃ */}
-        <div style={{ marginTop: 20, display: "flex", gap: 10 }}>
+      <div style={{ marginBottom: 24 }}>
+        <div
+          style={{
+            marginBottom: 12,
+            color: "var(--text-muted)",
+            fontSize: 12,
+          }}
+        >
+          Chart period
+        </div>
+
+        <div style={{ display: "flex", gap: 10 }}>
           <SmallButton
-            active={point === "living_room"}
-            onClick={() => navigate("/room/living_room")}
+            active={period === "1h"}
+            onClick={() => setPeriod("1h")}
           >
-            Living Room
+            1h
           </SmallButton>
 
           <SmallButton
-            active={point === "bedroom"}
-            onClick={() => navigate("/room/bedroom")}
+            active={period === "24h"}
+            onClick={() => setPeriod("24h")}
           >
-            Bedroom
+            24h
           </SmallButton>
         </div>
       </div>
 
+      {loading && (
+        <div
+          style={{
+            marginBottom: 20,
+            color: "var(--text-muted)",
+            fontSize: 12,
+          }}
+        >
+          Loading chart data...
+        </div>
+      )}
+
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "350px 1fr",
-          gap: 40,
-          marginBottom: 60,
+          gridTemplateColumns: "1fr 350px",
+          gap: 36,
+          alignItems: "stretch",
         }}
       >
-        {/* LEWA STRONA */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 30 }}>
+        <div style={{ width: "100%", minWidth: 0, height: "100%" }}>
+          <Chart
+            data={chartData}
+            title="Environment measurements"
+            period={period}
+          />
+        </div>
+
+        <div style={{ height: "100%" }}>
           <Card
             title="Last Measurement"
             accent={coUi.border}
@@ -210,7 +261,7 @@ export default function Dashboard() {
                 color: coUi.fg,
                 fontSize: 12,
                 fontWeight: 800,
-                marginBottom: 14,
+                marginBottom: 18,
                 border: `1px solid ${coUi.border}`,
                 display: "inline-block",
               }}
@@ -222,92 +273,34 @@ export default function Dashboard() {
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: 10,
+                gap: 14,
               }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  fontSize: 32,
-                  fontWeight: 700,
-                }}
-              >
-                <FaTemperatureHigh color="#c71d1d" />
-                {latest?.temperature ?? "-"}°C
-              </div>
+              <MeasurementRow
+                icon={<FaTemperatureHigh color="#ef4444" />}
+                value={latest?.temperature ?? "-"}
+                unit="°C"
+              />
 
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  fontSize: 32,
-                  fontWeight: 700,
-                }}
-              >
-                <FaTint color="#1d92e6" />
-                {latest?.humidity ?? "-"}%
-              </div>
+              <MeasurementRow
+                icon={<FaTint color="#3b82f6" />}
+                value={latest?.humidity ?? "-"}
+                unit="%"
+              />
 
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  fontSize: 32,
-                  fontWeight: 700,
-                }}
-              >
-                <FaSmog color="#e4d18b" />
-                {latest?.co ?? "-"} ppm
-              </div>
-            </div>
-          </Card>
-        </div>
+              <MeasurementRow
+                icon={<FaSmog color="#e5e7eb" />}
+                value={latest?.co ?? "-"}
+                unit="ppm"
+              />
 
-        {/* PRAWA STRONA */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <div style={{ marginBottom: 12, color: "#ffffff", fontSize: 12 }}>
-            Chart period
-          </div>
-
-          <div style={{ marginBottom: 20 }}>
-            <SmallButton active={period === "1h"} onClick={() => setPeriod("1h")}>
-              1h
-            </SmallButton>
-
-            <span style={{ marginLeft: 10 }} />
-
-            <SmallButton active={period === "24h"} onClick={() => setPeriod("24h")}>
-              24h
-            </SmallButton>
-          </div>
-
-          {loading && (
-            <div style={{ marginBottom: 20, color: "#94a3b8", fontSize: 12 }}>
-              Loading chart data...
-            </div>
-          )}
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 220px",
-              gap: 20,
-              alignItems: "start",
-            }}
-          >
-            <div style={{ width: "100%", minWidth: 0 }}>
-              <Chart
-                title={`Environment measurements (${period})`}
-                data={chartData}
+              <MeasurementRow
+                icon={<FaGaugeHigh color="#aa9c60" />}
+                value={latest?.pressure ?? "-"}
+                unit="hPa"
               />
             </div>
-
-            <Clock />
-          </div>
+          </Card>
         </div>
       </div>
     </div>

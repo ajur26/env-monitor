@@ -10,7 +10,7 @@ import bme280
 SSID = "BurningKrzak"
 PASSWORD = "98ExoDVs()"
 
-API_URL = "http://192.168.33.4:8000/api/measurements/"  # Twój backend
+API_URL = "http://192.168.33.2:8000/api/measurements/"  # Twój backend
 API_KEY = "a3f9c8b4e6d12f7a9b0c5e8d4f1a2b3c9d7e6f5a4c3b2a1f8e7d6c5b4a3f2e1"
 
 SEND_INTERVAL = 10  # sekundy

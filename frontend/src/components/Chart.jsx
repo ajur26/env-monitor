@@ -9,25 +9,53 @@ import {
   Legend,
 } from "recharts";
 
-function formatTime(ts) {
-  return new Date(ts).toLocaleTimeString();
+function formatTime(ts, period) {
+  const date = new Date(ts);
+
+  if (period === "24h") {
+    return date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
+  return date.toLocaleTimeString();
 }
 
-export default function Chart({ data, title }) {
+function formatTooltipValue(value, name) {
+  if (value == null) return ["-", name];
+
+  if (name === "Temperature") return [`${value} °C`, name];
+  if (name === "Humidity") return [`${value} %`, name];
+  if (name === "CO") return [`${value} ppm`, name];
+  if (name === "Pressure") return [`${value} hPa`, name];
+
+  return [value, name];
+}
+
+export default function Chart({ data, title, period }) {
+  const showPressure = period === "24h";
+
   return (
     <div
       style={{
         width: "100%",
         height: 380,
-        background: "#000000",
+        background: "var(--bg-panel)",
         borderRadius: 14,
-        boxShadow: "0 6px 20px rgba(0,0,0,0.4)",
+        border: "1px solid var(--border-soft)",
         boxSizing: "border-box",
         padding: 20,
       }}
     >
       {title && (
-        <h3 style={{ margin: "0 0 16px 0", color: "#cbd5e1" }}>
+        <h3
+          style={{
+            margin: "0 0 16px 0",
+            color: "var(--text-main)",
+            fontWeight: 600,
+          }}
+        >
           {title}
         </h3>
       )}
@@ -35,51 +63,92 @@ export default function Chart({ data, title }) {
       <div style={{ width: "100%", height: "320px" }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
-            <CartesianGrid stroke="#484848" strokeDasharray="3 3" />
+            <CartesianGrid
+              stroke="rgba(255,255,255,0.06)"
+              strokeDasharray="3 3"
+            />
 
             <XAxis
               dataKey="created_at"
-              tickFormatter={formatTime}
-              stroke="#94a3b8"
+              tickFormatter={(value) => formatTime(value, period)}
+              stroke="var(--text-muted)"
+              tick={{ fontSize: 12 }}
             />
 
-            <YAxis stroke="#94a3b8" />
+            <YAxis
+              yAxisId="left"
+              stroke="var(--text-muted)"
+              tick={{ fontSize: 12 }}
+            />
+
+            {showPressure && (
+              <YAxis
+                yAxisId="right"
+                orientation="right"
+                stroke="var(--text-muted)"
+                tick={{ fontSize: 12 }}
+              />
+            )}
 
             <Tooltip
-              contentStyle={{ background: "#1e293b", border: "none" }}
-              labelFormatter={(label) =>
-                new Date(label).toLocaleString()
-              }
+              contentStyle={{
+                background: "var(--bg-panel)",
+                border: "1px solid var(--border-soft)",
+                borderRadius: 10,
+                color: "var(--text-main)",
+              }}
+              labelFormatter={(label) => new Date(label).toLocaleString()}
+              formatter={formatTooltipValue}
             />
 
-            <Legend />
+            <Legend
+              wrapperStyle={{
+                color: "var(--text-muted)",
+                fontSize: 12,
+              }}
+            />
 
             <Line
+              yAxisId="left"
               type="monotone"
               dataKey="temperature"
               name="Temperature"
-              stroke="#c71d1d"
+              stroke="#ef4444"
               strokeWidth={2}
               dot={false}
             />
 
             <Line
+              yAxisId="left"
               type="monotone"
               dataKey="humidity"
               name="Humidity"
-              stroke="#1d92e6"
+              stroke="#3b82f6"
               strokeWidth={2}
               dot={false}
             />
 
             <Line
+              yAxisId="left"
               type="monotone"
               dataKey="co"
               name="CO"
-              stroke="#e4d18b"
+              stroke="#e5e7eb"
               strokeWidth={2}
               dot={false}
             />
+
+            {showPressure && (
+              <Line
+                yAxisId="right"
+                type="monotone"
+                dataKey="pressure"
+                name="Pressure"
+                stroke="#aa9c60"
+                strokeWidth={2}
+                dot={false}
+              />
+            )}
           </LineChart>
         </ResponsiveContainer>
       </div>
