@@ -25,18 +25,32 @@ export default function Login() {
       const data = await res.json();
 
       if (!res.ok) {
-        setErr(data?.detail || "Błąd logowania");
+        setErr(data?.detail || "Error logging in");
         return;
       }
 
       setTokens({ access: data.access, refresh: data.refresh });
-      navigate("/", { replace: true });
+      navigate("/room/living_room", { replace: true });
     } catch {
-      setErr("Błąd połączenia z API");
+      setErr("Error connecting to API");
     } finally {
       setLoading(false);
     }
   }
+
+  const inputStyle = {
+    padding: "10px 12px",
+    borderRadius: 10,
+    border: "1px solid var(--border-soft)",
+    background: "var(--bg-main)",
+    color: "var(--text-main)",
+    outline: "none",
+  };
+
+  const labelTextStyle = {
+    color: "var(--text-muted)",
+    fontSize: 12,
+  };
 
   return (
     <div
@@ -44,61 +58,56 @@ export default function Login() {
         minHeight: "100vh",
         display: "grid",
         placeItems: "center",
-        background: "#0f172a",
+        background: "var(--bg-main)",
         padding: 24,
-        color: "white",
-        fontFamily: "Inter, Arial, sans-serif",
+        color: "var(--text-main)",
       }}
     >
       <div
         style={{
           width: "100%",
           maxWidth: 420,
-          background: "#1e293b",
+          background: "var(--bg-panel)",
           borderRadius: 14,
           padding: 24,
-          boxShadow: "0 6px 20px rgba(0,0,0,0.4)",
-          border: "1px solid #334155",
+          border: "1px solid var(--border-soft)",
+          boxShadow: "0 6px 20px rgba(0,0,0,0.35)",
         }}
       >
-        <h2 style={{ marginTop: 0, marginBottom: 16 }}>Logowanie</h2>
+        <h2 style={{ marginTop: 0, marginBottom: 16 }}>Login</h2>
 
         <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
           <label style={{ display: "grid", gap: 6 }}>
-            <span style={{ color: "#cbd5e1", fontSize: 12 }}>Username</span>
+            <span style={labelTextStyle}>Username</span>
             <input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              style={{
-                padding: "10px 12px",
-                borderRadius: 10,
-                border: "1px solid #334155",
-                background: "#0b1220",
-                color: "white",
-              }}
+              style={inputStyle}
               autoComplete="username"
             />
           </label>
 
           <label style={{ display: "grid", gap: 6 }}>
-            <span style={{ color: "#cbd5e1", fontSize: 12 }}>Password</span>
+            <span style={labelTextStyle}>Password</span>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              style={{
-                padding: "10px 12px",
-                borderRadius: 10,
-                border: "1px solid #334155",
-                background: "#0b1220",
-                color: "white",
-              }}
+              style={inputStyle}
               autoComplete="current-password"
             />
           </label>
 
           {err ? (
-            <div style={{ color: "#fecaca", background: "#450a0a", padding: 10, borderRadius: 10, border: "1px solid #ef4444" }}>
+            <div
+              style={{
+                color: "var(--text-main)",
+                background: "var(--bg-main)",
+                padding: 10,
+                borderRadius: 10,
+                border: "1px solid var(--border-main)",
+              }}
+            >
               {err}
             </div>
           ) : null}
@@ -109,14 +118,17 @@ export default function Login() {
             style={{
               padding: "10px 12px",
               borderRadius: 10,
-              border: "1px solid #38bdf8",
-              background: "#0b1220",
-              color: "white",
-              cursor: "pointer",
-              opacity: loading ? 0.7 : 1,
+              border: "1px solid var(--border-soft)",
+              background: loading
+                ? "var(--button-bg-hover)"
+                : "var(--button-bg)",
+              color: "var(--text-main)",
+              cursor: loading ? "not-allowed" : "pointer",
+              opacity: loading ? 0.75 : 1,
+              fontWeight: 500,
             }}
           >
-            {loading ? "Logowanie..." : "Zaloguj"}
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>

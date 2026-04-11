@@ -18,18 +18,29 @@ export default function Clock() {
   return (
     <div
       style={{
-        background: "#000000",
+        background: "var(--bg-panel)",
         padding: 20,
         borderRadius: 14,
-        boxShadow: "0 6px 20px rgba(0,0,0,0.4)",
+        border: "1px solid var(--border-soft)",
         textAlign: "center",
       }}
     >
-      <div style={{ color: "#ffffff", marginBottom: 10 }}>
+      <div
+        style={{
+          color: "var(--text-muted)",
+          marginBottom: 10,
+          fontSize: 13,
+        }}
+      >
         Date / Time
       </div>
 
-      <div style={{ fontSize: 18 }}>
+      <div
+        style={{
+          fontSize: 14,
+          color: "var(--text-muted)",
+        }}
+      >
         {now.toLocaleDateString()}
       </div>
 
@@ -41,14 +52,15 @@ export default function Clock() {
           justifyContent: "center",
           alignItems: "center",
           gap: 10,
+          marginTop: 4,
         }}
       >
         {now.toLocaleTimeString()}
 
         {isDay ? (
-          <FaSun color="#facc15" size={22} />
+          <FaSun color="#facc15" size={20} />
         ) : (
-          <FaMoon color="#f1ea9e" size={22} />
+          <FaMoon color="#e5e7eb" size={20} />
         )}
       </div>
     </div>

@@ -19,15 +19,21 @@ export default function Chart({ data, title }) {
       style={{
         width: "100%",
         height: 380,
-        background: "#000000",
+        background: "var(--bg-panel)",
         borderRadius: 14,
-        boxShadow: "0 6px 20px rgba(0,0,0,0.4)",
+        border: "1px solid var(--border-soft)",
         boxSizing: "border-box",
         padding: 20,
       }}
     >
       {title && (
-        <h3 style={{ margin: "0 0 16px 0", color: "#cbd5e1" }}>
+        <h3
+          style={{
+            margin: "0 0 16px 0",
+            color: "var(--text-main)",
+            fontWeight: 600,
+          }}
+        >
           {title}
         </h3>
       )}
@@ -35,30 +41,47 @@ export default function Chart({ data, title }) {
       <div style={{ width: "100%", height: "320px" }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
-            <CartesianGrid stroke="#484848" strokeDasharray="3 3" />
+            <CartesianGrid
+              stroke="rgba(255,255,255,0.06)"
+              strokeDasharray="3 3"
+            />
 
             <XAxis
               dataKey="created_at"
               tickFormatter={formatTime}
-              stroke="#94a3b8"
+              stroke="var(--text-muted)"
+              tick={{ fontSize: 12 }}
             />
 
-            <YAxis stroke="#94a3b8" />
+            <YAxis
+              stroke="var(--text-muted)"
+              tick={{ fontSize: 12 }}
+            />
 
             <Tooltip
-              contentStyle={{ background: "#1e293b", border: "none" }}
+              contentStyle={{
+                background: "var(--bg-panel)",
+                border: "1px solid var(--border-soft)",
+                borderRadius: 10,
+                color: "var(--text-main)",
+              }}
               labelFormatter={(label) =>
                 new Date(label).toLocaleString()
               }
             />
 
-            <Legend />
+            <Legend
+              wrapperStyle={{
+                color: "var(--text-muted)",
+                fontSize: 12,
+              }}
+            />
 
             <Line
               type="monotone"
               dataKey="temperature"
               name="Temperature"
-              stroke="#c71d1d"
+              stroke="#ef4444"
               strokeWidth={2}
               dot={false}
             />
@@ -67,7 +90,7 @@ export default function Chart({ data, title }) {
               type="monotone"
               dataKey="humidity"
               name="Humidity"
-              stroke="#1d92e6"
+              stroke="#3b82f6"
               strokeWidth={2}
               dot={false}
             />
@@ -76,7 +99,16 @@ export default function Chart({ data, title }) {
               type="monotone"
               dataKey="co"
               name="CO"
-              stroke="#e4d18b"
+              stroke="#e5e7eb"
+              strokeWidth={2}
+              dot={false}
+            />
+
+            <Line
+              type="monotone"
+              dataKey="pressure"
+              name="Pressure"
+              stroke="#aa9c60"
               strokeWidth={2}
               dot={false}
             />

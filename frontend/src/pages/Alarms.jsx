@@ -18,7 +18,6 @@ export default function Alarms() {
 
       const data = await apiFetch("/measurements/alarms/");
 
-      // obsługa paginacji DRF lub zwykłej listy
       const list = Array.isArray(data)
         ? data
         : Array.isArray(data?.results)
@@ -38,41 +37,70 @@ export default function Alarms() {
     load();
   }, []);
 
+  const cardStyle = {
+    background: "var(--bg-panel)",
+    padding: 24,
+    borderRadius: 14,
+    border: "1px solid var(--border-soft)",
+  };
+
+  const thStyle = {
+    textAlign: "left",
+    color: "var(--text-muted)",
+    paddingBottom: 12,
+    fontWeight: 500,
+  };
+
+  const tdStyle = {
+    padding: "10px 0",
+    borderTop: "1px solid rgba(255,255,255,0.04)",
+  };
+
   return (
     <div>
-      <h1 style={{ marginBottom: 30 }}>Historia alarmów</h1>
+      <h1 style={{ marginBottom: 24 }}>Alarm History</h1>
 
-      <div
-        style={{
-          background: "#1e293b",
-          padding: 24,
-          borderRadius: 14,
-        }}
-      >
+      <div style={cardStyle}>
         {loading && <div>Loading...</div>}
-        {error && <div style={{ color: "red" }}>{error}</div>}
-        {!loading && alarms.length === 0 && <div>Brak alarmów</div>}
+
+        {error && (
+          <div style={{ color: "var(--border-main)" }}>
+            {error}
+          </div>
+        )}
+
+        {!loading && alarms.length === 0 && (
+          <div style={{ color: "var(--text-muted)" }}>
+            No alarms available
+          </div>
+        )}
 
         {!loading && alarms.length > 0 && (
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
-              <tr style={{ textAlign: "left", color: "#94a3b8" }}>
-                <th style={{ paddingBottom: 12 }}>Czas</th>
-                <th>Pomieszczenie</th>
-                <th>CO</th>
-                <th>Opis</th>
+              <tr>
+                <th style={thStyle}>Time</th>
+                <th style={thStyle}>Room</th>
+                <th style={thStyle}>CO</th>
+                <th style={thStyle}>Message</th>
               </tr>
             </thead>
 
             <tbody>
               {alarms.map((a) => (
                 <tr key={a.id}>
-                  <td style={{ padding: "8px 0" }}>
-                    {formatTs(a.created_at)}
+                  <td style={tdStyle}>{formatTs(a.created_at)}</td>
+                  <td style={tdStyle}>{a.point}</td>
+                  <td style={tdStyle}>
+                    <span
+                      style={{
+                        fontWeight: 600,
+                      }}
+                    >
+                      {a.co} ppm
+                    </span>
                   </td>
-                  <td>{a.point}</td>
-                  <td>{a.co} ppm</td>
-                  <td>{a.message}</td>
+                  <td style={tdStyle}>{a.message}</td>
                 </tr>
               ))}
             </tbody>

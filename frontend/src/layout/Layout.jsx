@@ -1,29 +1,25 @@
 import { Outlet } from "react-router-dom";
-import Sidebar from "./Sidebar";
-import HeaderRight from "./HeaderRight";
+import TopBar from "./Topbar";
 
 export default function Layout() {
   return (
     <div
       style={{
-        display: "grid",
-        gridTemplateColumns: "180px 1fr",
+        width: "100%",
         minHeight: "100vh",
-        background: "#000000",
-        color: "white",
+        background: "var(--bg-main)",
+        color: "var(--text-main)",
       }}
     >
-      <Sidebar />
+      <TopBar />
 
       <main
         style={{
           padding: 32,
-          borderLeft: "1px solid #000000",
         }}
       >
         <Outlet />
       </main>
-
     </div>
   );
 }
