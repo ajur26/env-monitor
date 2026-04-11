@@ -9,11 +9,33 @@ import {
   Legend,
 } from "recharts";
 
-function formatTime(ts) {
-  return new Date(ts).toLocaleTimeString();
+function formatTime(ts, period) {
+  const date = new Date(ts);
+
+  if (period === "24h") {
+    return date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
+  return date.toLocaleTimeString();
 }
 
-export default function Chart({ data, title }) {
+function formatTooltipValue(value, name) {
+  if (value == null) return ["-", name];
+
+  if (name === "Temperature") return [`${value} °C`, name];
+  if (name === "Humidity") return [`${value} %`, name];
+  if (name === "CO") return [`${value} ppm`, name];
+  if (name === "Pressure") return [`${value} hPa`, name];
+
+  return [value, name];
+}
+
+export default function Chart({ data, title, period }) {
+  const showPressure = period === "24h";
+
   return (
     <div
       style={{
@@ -48,15 +70,25 @@ export default function Chart({ data, title }) {
 
             <XAxis
               dataKey="created_at"
-              tickFormatter={formatTime}
+              tickFormatter={(value) => formatTime(value, period)}
               stroke="var(--text-muted)"
               tick={{ fontSize: 12 }}
             />
 
             <YAxis
+              yAxisId="left"
               stroke="var(--text-muted)"
               tick={{ fontSize: 12 }}
             />
+
+            {showPressure && (
+              <YAxis
+                yAxisId="right"
+                orientation="right"
+                stroke="var(--text-muted)"
+                tick={{ fontSize: 12 }}
+              />
+            )}
 
             <Tooltip
               contentStyle={{
@@ -65,9 +97,8 @@ export default function Chart({ data, title }) {
                 borderRadius: 10,
                 color: "var(--text-main)",
               }}
-              labelFormatter={(label) =>
-                new Date(label).toLocaleString()
-              }
+              labelFormatter={(label) => new Date(label).toLocaleString()}
+              formatter={formatTooltipValue}
             />
 
             <Legend
@@ -78,6 +109,7 @@ export default function Chart({ data, title }) {
             />
 
             <Line
+              yAxisId="left"
               type="monotone"
               dataKey="temperature"
               name="Temperature"
@@ -87,6 +119,7 @@ export default function Chart({ data, title }) {
             />
 
             <Line
+              yAxisId="left"
               type="monotone"
               dataKey="humidity"
               name="Humidity"
@@ -96,6 +129,7 @@ export default function Chart({ data, title }) {
             />
 
             <Line
+              yAxisId="left"
               type="monotone"
               dataKey="co"
               name="CO"
@@ -104,14 +138,17 @@ export default function Chart({ data, title }) {
               dot={false}
             />
 
-            <Line
-              type="monotone"
-              dataKey="pressure"
-              name="Pressure"
-              stroke="#aa9c60"
-              strokeWidth={2}
-              dot={false}
-            />
+            {showPressure && (
+              <Line
+                yAxisId="right"
+                type="monotone"
+                dataKey="pressure"
+                name="Pressure"
+                stroke="#aa9c60"
+                strokeWidth={2}
+                dot={false}
+              />
+            )}
           </LineChart>
         </ResponsiveContainer>
       </div>

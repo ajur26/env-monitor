@@ -241,8 +241,9 @@ export default function Dashboard() {
       >
         <div style={{ width: "100%", minWidth: 0, height: "100%" }}>
           <Chart
-            title={`Environment measurements (${period})`}
             data={chartData}
+            title="Environment measurements"
+            period={period}
           />
         </div>
 
