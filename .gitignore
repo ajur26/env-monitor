@@ -3,6 +3,8 @@
 # =====================================
 __pycache__/
 *.py[cod]
+*.pyo
+*.pyd
 *$py.class
 
 # Virtual environments
@@ -21,6 +23,8 @@ dist/
 # =====================================
 *.log
 db.sqlite3
+*.sqlite3
+*.db
 media/
 staticfiles/
 
@@ -31,8 +35,9 @@ staticfiles/
 # =====================================
 # Node / React (frontend)
 # =====================================
+node_modules/
 frontend/node_modules/
-frontend/build/
+frontend/dist/
 frontend/.env
 
 # Logs
@@ -53,10 +58,15 @@ yarn-error.log*
 Thumbs.db
 
 # =====================================
-# Docker (jeśli dodamy później)
+# Testing / cache
+# =====================================
+coverage/
+.pytest_cache/
+.mypy_cache/
+
+# =====================================
+# Docker (future)
 # =====================================
 *.pid
 *.seed
 docker-data/
-
-.env

@@ -1,6 +1,5 @@
 from datetime import timedelta
 
-from django.conf import settings
 from django.db.models import Avg
 from django.utils import timezone
 from django.utils.dateparse import parse_date
@@ -13,19 +12,6 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Measurement, Alarm
 from .permissions import IsUserOrDeviceApiKey
 from .serializers import MeasurementSerializer, AlarmSerializer
-
-
-# ======================
-# CO STATUS (na podstawie voltage)
-# ======================
-def co_status(value, thresholds):
-    if value is None:
-        return "unknown"
-    if value <= thresholds["ok_max"]:
-        return "ok"
-    if value <= thresholds["warning_max"]:
-        return "warning"
-    return "danger"
 
 
 # ======================
@@ -81,19 +67,11 @@ class MeasurementStatsView(APIView):
         last_hour_qs = queryset.filter(created_at__gte=one_hour_ago)
         last_24h_qs = queryset.filter(created_at__gte=twenty_four_hours_ago)
 
-        thresholds = getattr(
-            settings,
-            "CO_THRESHOLDS",
-            {"ok_max": 0.4, "warning_max": 1.0}  # voltage!
-        )
-
-        last_co = last_measurement.co_voltage if last_measurement else None
-        status_str = co_status(last_co, thresholds)
-
         last_hour_avg = last_hour_qs.aggregate(
             temperature=Avg("temperature"),
             humidity=Avg("humidity"),
             pressure=Avg("pressure"),
+            co=Avg("co"),
             co_voltage=Avg("co_voltage"),
         )
 
@@ -101,17 +79,18 @@ class MeasurementStatsView(APIView):
             temperature=Avg("temperature"),
             humidity=Avg("humidity"),
             pressure=Avg("pressure"),
+            co=Avg("co"),
             co_voltage=Avg("co_voltage"),
         )
 
         data = {
-            "co_status": status_str,
-            "co_thresholds": thresholds,
+            "co_status": last_measurement.co_status if last_measurement else None,
             "last_measurement": {
                 "temperature": last_measurement.temperature if last_measurement else None,
                 "humidity": last_measurement.humidity if last_measurement else None,
                 "pressure": last_measurement.pressure if last_measurement else None,
-                "co_voltage": last_co,
+                "co": last_measurement.co if last_measurement else None,
+                "co_voltage": last_measurement.co_voltage if last_measurement else None,
                 "co_status": last_measurement.co_status if last_measurement else None,
                 "created_at": last_measurement.created_at if last_measurement else None,
             },
@@ -178,6 +157,7 @@ class LatestMeasurementsView(APIView):
                 "temperature": obj.temperature,
                 "humidity": obj.humidity,
                 "pressure": obj.pressure,
+                "co": obj.co,
                 "co_voltage": obj.co_voltage,
                 "co_status": obj.co_status,
                 "created_at": obj.created_at,

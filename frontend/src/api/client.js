@@ -1,6 +1,6 @@
 import { getAccessToken } from "../auth/auth";
 
-export const API_BASE = "http://127.0.0.1:8000/api";
+export const API_BASE = "http://192.168.88.43:8000/api";
 
 export async function apiFetch(path, options = {}) {
   const token = getAccessToken();
