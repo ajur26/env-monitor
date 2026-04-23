@@ -3,55 +3,45 @@ import time
 import network
 import urequests
 import bme280
-import math
+import json
+import machine
 
-# ======================
-# KONFIG
-# ======================
-SSID = "BLANCO"
-PASSWORD = "Blanco_0126_"
+CONFIG_FILE = "config.json"
 
-API_URL = "http://192.168.88.43:8000/api/measurements/"
-API_KEY = "a3f9c8b4e6d12f7a9b0c5e8d4f1a2b3c9d7e6f5a4c3b2a1f8e7d6c5b4a3f2e1"
-
-SEND_INTERVAL = 10  # sekundy
-
-# ======================
-# MQ-7 / ADC
-# ======================
 ADC_MAX = 4095
 VCC = 3.3
 
-# Tryb kalibracji
-CALIBRATION_MODE = False
 
-# Ile próbek do kalibracji
-CALIBRATION_SAMPLES = 60
+def load_config():
+    with open(CONFIG_FILE, "r") as f:
+        return json.load(f)
 
-# Wartości po kalibracji
-R0_ROOM1 = 0.7383
-R0_ROOM2 = 0.6658
 
-# ======================
-# WIFI
-# ======================
-def connect_wifi():
+cfg = load_config()
+
+API_URL = cfg["api_url"]
+API_KEY = cfg["api_key"]
+SEND_INTERVAL = int(cfg.get("send_interval", 10))
+
+CALIBRATION_MODE = cfg.get("calibration_mode", False)
+CALIBRATION_SAMPLES = int(cfg.get("calibration_samples", 60))
+
+R0_ROOM1 = float(cfg.get("r0_room1", 0.7383))
+R0_ROOM2 = float(cfg.get("r0_room2", 0.6658))
+
+
+def ensure_wifi():
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
 
-    if not wlan.isconnected():
-        print("Laczenie z WiFi...")
-        wlan.connect(SSID, PASSWORD)
-
-        timeout = 20
-        while not wlan.isconnected() and timeout > 0:
-            time.sleep(1)
-            timeout -= 1
-
     if wlan.isconnected():
-        print("WiFi OK:", wlan.ifconfig())
-    else:
-        print("WiFi ERROR")
+        return True
+
+    print("WiFi disconnected. Restarting...")
+    time.sleep(2)
+    machine.reset()
+    return False
+
 
 # ======================
 # I2C
@@ -63,7 +53,7 @@ bme1 = bme280.BME280(i2c=i2c1)  # living_room
 bme2 = bme280.BME280(i2c=i2c2)  # bedroom
 
 # ======================
-# MQ7
+# MQ-7
 # ======================
 mq7_1 = ADC(Pin(34))
 mq7_1.atten(ADC.ATTN_11DB)
@@ -71,9 +61,7 @@ mq7_1.atten(ADC.ATTN_11DB)
 mq7_2 = ADC(Pin(39))
 mq7_2.atten(ADC.ATTN_11DB)
 
-# ======================
-# FUNKCJE BME280
-# ======================
+
 def read_bme(sensor):
     t, p, h = sensor.read_compensated_data()
     return {
@@ -82,16 +70,16 @@ def read_bme(sensor):
         "humidity": round(h, 2),
     }
 
-# ======================
-# FUNKCJE MQ-7
-# ======================
+
 def adc_to_voltage(raw):
     return (raw / ADC_MAX) * VCC
+
 
 def calc_rs(vout):
     if vout <= 0 or vout >= VCC:
         return None
     return (VCC - vout) / vout
+
 
 def read_adc_avg(sensor, samples=20, delay_ms=50):
     total = 0
@@ -99,6 +87,7 @@ def read_adc_avg(sensor, samples=20, delay_ms=50):
         total += sensor.read()
         time.sleep_ms(delay_ms)
     return total / samples
+
 
 def calibrate_r0(sensor, label):
     rs_values = []
@@ -136,6 +125,7 @@ def calibrate_r0(sensor, label):
     print("R0 =", round(r0, 6))
     return r0
 
+
 def calc_co_ppm(sensor, r0):
     raw = read_adc_avg(sensor, samples=15, delay_ms=30)
     vout = adc_to_voltage(raw)
@@ -148,11 +138,10 @@ def calc_co_ppm(sensor, r0):
             "rs": None,
             "ratio": None,
             "ppm": 0,
-            "status": "UNKNOWN",
+            "status": "unknown",
         }
 
     ratio = rs / r0
-
     ppm = 400 / ratio
 
     if ppm < 0:
@@ -161,13 +150,11 @@ def calc_co_ppm(sensor, r0):
     ppm_int = int(ppm)
 
     if ppm_int < 30:
-        status = "OK"
+        status = "ok"
     elif ppm_int < 70:
-        status = "LOW"
-    elif ppm_int < 150:
-        status = "WARNING"
+        status = "warning"
     else:
-        status = "DANGER"
+        status = "danger"
 
     return {
         "raw": round(raw, 1),
@@ -178,35 +165,28 @@ def calc_co_ppm(sensor, r0):
         "status": status,
     }
 
-# ======================
-# API
-# ======================
+
 def send_data(payload):
+    response = None
     try:
         headers = {
             "Content-Type": "application/json",
             "X-API-KEY": API_KEY,
         }
-        r = urequests.post(API_URL, json=payload, headers=headers)
-        print("POST:", r.status_code, r.text)
-        r.close()
+        response = urequests.post(API_URL, json=payload, headers=headers)
+        print("POST:", response.status_code, response.text)
     except Exception as e:
         print("Send error:", e)
+    finally:
+        if response:
+            response.close()
 
-# ======================
-# START
-# ======================
-connect_wifi()
 
-# ======================
-# KALIBRACJA
-# ======================
 if CALIBRATION_MODE:
     print("")
     print("TRYB KALIBRACJI WLACZONY")
     print("Nie wysylam danych do backendu.")
-    print("Po zakonczeniu przepisz R0_ROOM1 i R0_ROOM2 do kodu,")
-    print("a potem ustaw CALIBRATION_MODE = False.")
+    print("Po zakonczeniu przepisz nowe R0 do config.json")
     print("")
 
     r0_1 = calibrate_r0(mq7_1, "living_room")
@@ -218,17 +198,16 @@ if CALIBRATION_MODE:
     print("R0_ROOM1 =", r0_1)
     print("R0_ROOM2 =", r0_2)
     print("")
-    print("Przepisz te wartosci do kodu i ustaw CALIBRATION_MODE = False.")
 
     while True:
         time.sleep(5)
 
-# ======================
-# PĘTLA GŁÓWNA
-# ======================
+
 while True:
     try:
-        # ===== living_room =====
+        ensure_wifi()
+
+        # living_room
         bme_data1 = read_bme(bme1)
         mq7_data1 = calc_co_ppm(mq7_1, R0_ROOM1)
 
@@ -242,7 +221,7 @@ while True:
             "co_status": mq7_data1["status"],
         }
 
-        # ===== bedroom =====
+        # bedroom
         bme_data2 = read_bme(bme2)
         mq7_data2 = calc_co_ppm(mq7_2, R0_ROOM2)
 

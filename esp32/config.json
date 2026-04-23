@@ -1,0 +1,13 @@
+{
+  "wifi_ssid": "BurningKrzak",
+  "wifi_password": "ExoDvs()",
+  "api_url": "http://andrzejjur.pl/api/measurements/",
+  "api_key": "a3f9c8b4e6d12f7a9b0c5e8d4f1a2b3c9d7e6f5a4c3b2a1f8e7d6c5b4a3f2e1",
+  "send_interval": 10,
+  "calibration_mode": false,
+  "calibration_samples": 60,
+  "r0_room1": 0.7383,
+  "r0_room2": 0.6658,
+  "ap_ssid": "ENV-MONITOR-SETUP",
+  "ap_password": "envmonitor123"
+}
