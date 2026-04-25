@@ -3,21 +3,10 @@ import TopBar from "./Topbar";
 
 export default function Layout() {
   return (
-    <div
-      style={{
-        width: "100%",
-        minHeight: "100vh",
-        background: "var(--bg-main)",
-        color: "var(--text-main)",
-      }}
-    >
+    <div className="app-layout">
       <TopBar />
 
-      <main
-        style={{
-          padding: 32,
-        }}
-      >
+      <main className="app-main">
         <Outlet />
       </main>
     </div>

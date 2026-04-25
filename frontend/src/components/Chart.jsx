@@ -19,7 +19,10 @@ function formatTime(ts, period) {
     });
   }
 
-  return date.toLocaleTimeString();
+  return date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 function formatTooltipValue(value, name) {
@@ -37,32 +40,20 @@ export default function Chart({ data, title, period }) {
   const showPressure = period === "24h";
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: 380,
-        background: "var(--bg-panel)",
-        borderRadius: 14,
-        border: "1px solid var(--border-soft)",
-        boxSizing: "border-box",
-        padding: 20,
-      }}
-    >
-      {title && (
-        <h3
-          style={{
-            margin: "0 0 16px 0",
-            color: "var(--text-main)",
-            fontWeight: 600,
-          }}
-        >
-          {title}
-        </h3>
-      )}
+    <div className="chart-card">
+      {title && <h3 className="chart-title">{title}</h3>}
 
-      <div style={{ width: "100%", height: "320px" }}>
+      <div className="chart-wrapper">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data}>
+          <LineChart
+            data={data}
+            margin={{
+              top: 8,
+              right: showPressure ? 16 : 8,
+              left: -16,
+              bottom: 8,
+            }}
+          >
             <CartesianGrid
               stroke="rgba(255,255,255,0.06)"
               strokeDasharray="3 3"
@@ -72,13 +63,15 @@ export default function Chart({ data, title, period }) {
               dataKey="created_at"
               tickFormatter={(value) => formatTime(value, period)}
               stroke="var(--text-muted)"
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 11 }}
+              minTickGap={24}
             />
 
             <YAxis
               yAxisId="left"
               stroke="var(--text-muted)"
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 11 }}
+              width={40}
             />
 
             {showPressure && (
@@ -86,7 +79,9 @@ export default function Chart({ data, title, period }) {
                 yAxisId="right"
                 orientation="right"
                 stroke="var(--text-muted)"
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 11 }}
+                width={45}
+                domain={[950, 1050]}
               />
             )}
 

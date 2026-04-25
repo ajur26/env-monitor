@@ -30,68 +30,45 @@ export default function History() {
     load();
   }, []);
 
-  const cardStyle = {
-    background: "var(--bg-panel)",
-    padding: 24,
-    borderRadius: 14,
-    border: "1px solid var(--border-soft)",
-  };
-
-  const thStyle = {
-    textAlign: "left",
-    color: "var(--text-muted)",
-    paddingBottom: 12,
-    fontWeight: 500,
-  };
-
-  const tdStyle = {
-    padding: "10px 0",
-    borderTop: "1px solid rgba(255,255,255,0.04)",
-  };
-
   return (
-    <div>
-      <h1 style={{ marginBottom: 24 }}>Measurement History</h1>
+    <div className="history-page">
+      <h1 className="history-title">Measurement History</h1>
 
-      <div style={cardStyle}>
+      <div className="history-card">
         {loading && <div>Loading...</div>}
 
-        {error && (
-          <div style={{ color: "var(--border-main)" }}>
-            {error}
-          </div>
-        )}
+        {error && <div className="history-error">{error}</div>}
 
         {!loading && !error && measurements.length === 0 && (
-          <div style={{ color: "var(--text-muted)" }}>
-            No measurements available
-          </div>
+          <div className="history-empty">No measurements available</div>
         )}
 
         {!loading && measurements.length > 0 && (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <th style={thStyle}>Time</th>
-                <th style={thStyle}>Temperature</th>
-                <th style={thStyle}>Humidity</th>
-                <th style={thStyle}>CO</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {measurements.map((m) => (
-                <tr key={m.id}>
-                  <td style={tdStyle}>{formatTs(m.created_at)}</td>
-                  <td style={tdStyle}>{m.temperature} °C</td>
-                  <td style={tdStyle}>{m.humidity} %</td>
-                  <td style={tdStyle}>
-                    <span style={{ fontWeight: 600 }}>{m.co} ppm</span>
-                  </td>
+          <div className="table-wrapper">
+            <table className="history-table">
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Temperature</th>
+                  <th>Humidity</th>
+                  <th>CO</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {measurements.map((m) => (
+                  <tr key={m.id}>
+                    <td>{formatTs(m.created_at)}</td>
+                    <td>{m.temperature} °C</td>
+                    <td>{m.humidity} %</td>
+                    <td>
+                      <span className="co-value">{m.co} ppm</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

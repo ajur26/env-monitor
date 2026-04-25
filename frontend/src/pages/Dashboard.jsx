@@ -2,11 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Chart from "../components/Chart";
 import { apiFetch } from "../api/client";
-import {
-  FaTemperatureHigh,
-  FaTint,
-  FaSmog,
-} from "react-icons/fa";
+import { FaTemperatureHigh, FaTint, FaSmog } from "react-icons/fa";
 import { FaGaugeHigh } from "react-icons/fa6";
 
 function getCoUI(status) {
@@ -49,28 +45,16 @@ function getCoUI(status) {
 function Card({ title, children, accent, headerRight, gradient }) {
   return (
     <div
+      className="dashboard-card"
       style={{
         background: gradient ? gradient : "var(--bg-panel)",
-        padding: 24,
-        borderRadius: 14,
         border: accent
           ? `1px solid ${accent}`
           : "1px solid var(--border-soft)",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "baseline",
-          justifyContent: "space-between",
-          gap: 16,
-          marginBottom: 14,
-        }}
-      >
-        <h3 style={{ margin: 0, color: "var(--text-main)" }}>{title}</h3>
+      <div className="dashboard-card-header">
+        <h3>{title}</h3>
         {headerRight}
       </div>
       {children}
@@ -81,19 +65,8 @@ function Card({ title, children, accent, headerRight, gradient }) {
 function SmallButton({ active, onClick, children }) {
   return (
     <button
+      className={`period-button ${active ? "active" : ""}`}
       onClick={onClick}
-      style={{
-        padding: "8px 12px",
-        borderRadius: 10,
-        border: active
-          ? "1px solid var(--border-main)"
-          : "1px solid var(--border-soft)",
-        background: active ? "var(--button-active)" : "var(--button-bg)",
-        color: active ? "var(--button-active-text)" : "var(--text-main)",
-        cursor: "pointer",
-        transition: "all 0.2s ease",
-        fontWeight: active ? 600 : 500,
-      }}
     >
       {children}
     </button>
@@ -102,26 +75,8 @@ function SmallButton({ active, onClick, children }) {
 
 function MeasurementRow({ icon, value, unit }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 10,
-        fontSize: 32,
-        fontWeight: 700,
-        color: "var(--text-main)",
-      }}
-    >
-      <span
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          minWidth: 32,
-        }}
-      >
-        {icon}
-      </span>
+    <div className="measurement-row">
+      <span className="measurement-icon">{icon}</span>
       <span>
         {value} {unit}
       </span>
@@ -176,37 +131,16 @@ export default function Dashboard() {
   const coUi = getCoUI(stats?.co_status);
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        padding: 40,
-        boxSizing: "border-box",
-        background: "var(--bg-main)",
-        color: "var(--text-main)",
-      }}
-    >
-      <div style={{ marginBottom: 30 }}>
-        <h1 style={{ marginTop: 16, color: "var(--text-main)" }}>
-          {point === "living_room" ? "Living Room" : "Bedroom"} Dashboard
-        </h1>
-      </div>
+    <main className="dashboard-page">
+      <header className="dashboard-header">
+        <h1>{point === "living_room" ? "Living Room" : "Bedroom"} Dashboard</h1>
+      </header>
 
-      <div style={{ marginBottom: 24 }}>
-        <div
-          style={{
-            marginBottom: 12,
-            color: "var(--text-muted)",
-            fontSize: 12,
-          }}
-        >
-          Chart period
-        </div>
+      <section className="period-section">
+        <div className="period-label">Chart period</div>
 
-        <div style={{ display: "flex", gap: 10 }}>
-          <SmallButton
-            active={period === "1h"}
-            onClick={() => setPeriod("1h")}
-          >
+        <div className="period-buttons">
+          <SmallButton active={period === "1h"} onClick={() => setPeriod("1h")}>
             1h
           </SmallButton>
 
@@ -217,29 +151,12 @@ export default function Dashboard() {
             24h
           </SmallButton>
         </div>
-      </div>
+      </section>
 
-      {loading && (
-        <div
-          style={{
-            marginBottom: 20,
-            color: "var(--text-muted)",
-            fontSize: 12,
-          }}
-        >
-          Loading chart data...
-        </div>
-      )}
+      {loading && <div className="loading-text">Loading chart data...</div>}
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 350px",
-          gap: 36,
-          alignItems: "stretch",
-        }}
-      >
-        <div style={{ width: "100%", minWidth: 0, height: "100%" }}>
+      <section className="dashboard-grid">
+        <div className="chart-column">
           <Chart
             data={chartData}
             title="Environment measurements"
@@ -247,35 +164,24 @@ export default function Dashboard() {
           />
         </div>
 
-        <div style={{ height: "100%" }}>
+        <div className="last-measurement-column">
           <Card
             title="Last Measurement"
             accent={coUi.border}
             gradient={coUi.gradient}
           >
             <div
+              className="co-status-badge"
               style={{
-                padding: "6px 10px",
-                borderRadius: 999,
                 background: coUi.bg,
                 color: coUi.fg,
-                fontSize: 12,
-                fontWeight: 800,
-                marginBottom: 18,
                 border: `1px solid ${coUi.border}`,
-                display: "inline-block",
               }}
             >
               CO STATUS: {coUi.label}
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 14,
-              }}
-            >
+            <div className="measurement-list">
               <MeasurementRow
                 icon={<FaTemperatureHigh color="#ef4444" />}
                 value={latest?.temperature ?? "-"}
@@ -302,7 +208,7 @@ export default function Dashboard() {
             </div>
           </Card>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

@@ -37,74 +37,45 @@ export default function Alarms() {
     load();
   }, []);
 
-  const cardStyle = {
-    background: "var(--bg-panel)",
-    padding: 24,
-    borderRadius: 14,
-    border: "1px solid var(--border-soft)",
-  };
-
-  const thStyle = {
-    textAlign: "left",
-    color: "var(--text-muted)",
-    paddingBottom: 12,
-    fontWeight: 500,
-  };
-
-  const tdStyle = {
-    padding: "10px 0",
-    borderTop: "1px solid rgba(255,255,255,0.04)",
-  };
-
   return (
-    <div>
-      <h1 style={{ marginBottom: 24 }}>Alarm History</h1>
+    <div className="alarms-page">
+      <h1 className="alarms-title">Alarm History</h1>
 
-      <div style={cardStyle}>
+      <div className="alarms-card">
         {loading && <div>Loading...</div>}
 
-        {error && (
-          <div style={{ color: "var(--border-main)" }}>
-            {error}
-          </div>
-        )}
+        {error && <div className="alarms-error">{error}</div>}
 
         {!loading && alarms.length === 0 && (
-          <div style={{ color: "var(--text-muted)" }}>
-            No alarms available
-          </div>
+          <div className="alarms-empty">No alarms available</div>
         )}
 
         {!loading && alarms.length > 0 && (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <th style={thStyle}>Time</th>
-                <th style={thStyle}>Room</th>
-                <th style={thStyle}>CO</th>
-                <th style={thStyle}>Message</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {alarms.map((a) => (
-                <tr key={a.id}>
-                  <td style={tdStyle}>{formatTs(a.created_at)}</td>
-                  <td style={tdStyle}>{a.point}</td>
-                  <td style={tdStyle}>
-                    <span
-                      style={{
-                        fontWeight: 600,
-                      }}
-                    >
-                      {a.co} ppm
-                    </span>
-                  </td>
-                  <td style={tdStyle}>{a.message}</td>
+          <div className="table-wrapper">
+            <table className="alarms-table">
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Room</th>
+                  <th>CO</th>
+                  <th>Message</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {alarms.map((a) => (
+                  <tr key={a.id}>
+                    <td>{formatTs(a.created_at)}</td>
+                    <td>{a.point}</td>
+                    <td>
+                      <span className="co-value">{a.co} ppm</span>
+                    </td>
+                    <td>{a.message}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
