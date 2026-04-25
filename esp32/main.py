@@ -43,18 +43,14 @@ def ensure_wifi():
     return False
 
 
-# ======================
 # I2C
-# ======================
 i2c1 = I2C(0, scl=Pin(20), sda=Pin(22))
 i2c2 = I2C(1, scl=Pin(5), sda=Pin(4))
 
 bme1 = bme280.BME280(i2c=i2c1)  # living_room
 bme2 = bme280.BME280(i2c=i2c2)  # bedroom
 
-# ======================
 # MQ-7
-# ======================
 mq7_1 = ADC(Pin(34))
 mq7_1.atten(ADC.ATTN_11DB)
 

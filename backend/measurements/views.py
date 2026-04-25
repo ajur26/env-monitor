@@ -14,9 +14,6 @@ from .permissions import IsUserOrDeviceApiKey
 from .serializers import MeasurementSerializer, AlarmSerializer
 
 
-# ======================
-# LIST + CREATE (ESP POST tutaj)
-# ======================
 class MeasurementListCreateView(generics.ListCreateAPIView):
     serializer_class = MeasurementSerializer
     permission_classes = [IsUserOrDeviceApiKey]
@@ -44,9 +41,6 @@ class MeasurementListCreateView(generics.ListCreateAPIView):
         return queryset
 
 
-# ======================
-# STATYSTYKI
-# ======================
 class MeasurementStatsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -101,9 +95,6 @@ class MeasurementStatsView(APIView):
         return Response(data)
 
 
-# ======================
-# DO WYKRESÓW
-# ======================
 class RecentMeasurementsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -129,9 +120,6 @@ class RecentMeasurementsView(APIView):
         return Response(serializer.data)
 
 
-# ======================
-# OSTATNIE POMIARY
-# ======================
 class LatestMeasurementsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -171,9 +159,6 @@ class LatestMeasurementsView(APIView):
         return Response(data)
 
 
-# ======================
-# ALARMY
-# ======================
 class AlarmListView(generics.ListAPIView):
     queryset = Alarm.objects.all().order_by("-created_at")
     serializer_class = AlarmSerializer

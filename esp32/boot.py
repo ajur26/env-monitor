@@ -24,7 +24,7 @@ def load_config():
             "r0_room1": 0.7383,
             "r0_room2": 0.6658,
             "ap_ssid": "ENV-MONITOR-SETUP",
-            "ap_password": "envmonitor123",
+            "ap_password": "envmonitor123"
         }
 
 

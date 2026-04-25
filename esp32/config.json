@@ -1,7 +1,7 @@
 {
   "wifi_ssid": "BurningKrzak",
-  "wifi_password": "ExoDvs()",
-  "api_url": "http://andrzejjur.pl/api/measurements/",
+  "wifi_password": "98ExoDVs()",
+  "api_url": "http://zack205.mikrus.xyz:20205/api/measurements/",
   "api_key": "a3f9c8b4e6d12f7a9b0c5e8d4f1a2b3c9d7e6f5a4c3b2a1f8e7d6c5b4a3f2e1",
   "send_interval": 10,
   "calibration_mode": false,
