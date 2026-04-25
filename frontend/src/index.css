@@ -231,6 +231,239 @@ a {
   font-weight: 600;
 }
 
+:root {
+  font-family: "Inter", system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  --bg-main: #000000;
+  --bg-panel: #0f0f0f;
+
+  --border-main: #b8bec5;
+  --border-soft: #7e8791;
+
+  --text-main: #f3f4f6;
+  --text-muted: #9aa4ad;
+
+  --button-bg: #111315;
+  --button-bg-hover: #181c20;
+  --button-active: #b8bec5;
+  --button-active-text: #0b0c0d;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--bg-main);
+  color: var(--text-main);
+  overflow-x: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+select {
+  max-width: 100%;
+}
+
+img,
+svg,
+canvas {
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+/* =========================
+   LAYOUT
+========================= */
+
+.app-layout {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--bg-main);
+  color: var(--text-main);
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  padding: 32px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* =========================
+   TOPBAR
+========================= */
+
+.topbar {
+  width: 100%;
+  min-height: 64px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border-soft);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 20px;
+}
+
+.topbar-left,
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.topbar-brand {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-right: 10px;
+  color: var(--text-main);
+  white-space: nowrap;
+}
+
+.rooms-dropdown {
+  position: relative;
+}
+
+.topbar-link,
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border-soft);
+  background: var(--button-bg);
+  color: var(--text-main);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.topbar-link:hover,
+.logout-button:hover {
+  background: var(--button-bg-hover);
+}
+
+.topbar-link.active {
+  border: 1px solid var(--border-main);
+  background: var(--button-active);
+  color: var(--button-active-text);
+  font-weight: 600;
+}
+
+.rooms-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 180px;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-panel);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rooms-menu-item {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-main);
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.rooms-menu-item:hover {
+  background: var(--button-bg-hover);
+}
+
+.rooms-menu-item.active {
+  border: 1px solid var(--border-main);
+  background: var(--button-active);
+  color: var(--button-active-text);
+}
+
+.topbar-time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.topbar-clock {
+  color: var(--text-main);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.topbar-user {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+/* =========================
+   CHART
+========================= */
+
+.chart-card {
+  width: 100%;
+  height: 380px;
+  background: var(--bg-panel);
+  border-radius: 14px;
+  border: 1px solid var(--border-soft);
+  padding: 20px;
+  min-width: 0;
+}
+
+.chart-title {
+  margin: 0 0 16px 0;
+  color: var(--text-main);
+  font-weight: 600;
+}
+
 .chart-wrapper {
   width: 100%;
   height: 320px;
@@ -770,3 +1003,552 @@ a {
     display: none;
   }
 }
+
+.chart-empty {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.chart-wrapper {
+  width: 100%;
+  height: 320px;
+  min-width: 0;
+}
+
+/* =========================
+   DASHBOARD
+========================= */
+
+.dashboard-page {
+  min-height: 100vh;
+  background: var(--bg-main);
+  color: var(--text-main);
+}
+
+.dashboard-header {
+  margin-bottom: 30px;
+}
+
+.dashboard-header h1 {
+  margin: 16px 0 0 0;
+  color: var(--text-main);
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+.period-section {
+  margin-bottom: 24px;
+}
+
+.period-label {
+  margin-bottom: 12px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.period-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.period-button {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-soft);
+  background: var(--button-bg);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.period-button.active {
+  border: 1px solid var(--border-main);
+  background: var(--button-active);
+  color: var(--button-active-text);
+  font-weight: 600;
+}
+
+.loading-text {
+  margin-bottom: 20px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 350px;
+  gap: 36px;
+  align-items: stretch;
+}
+
+.chart-column,
+.last-measurement-column {
+  min-width: 0;
+}
+
+.dashboard-card {
+  padding: 24px;
+  border-radius: 14px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dashboard-card-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.dashboard-card-header h3 {
+  margin: 0;
+  color: var(--text-main);
+}
+
+.co-status-badge {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  margin-bottom: 18px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.measurement-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.measurement-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.measurement-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+}
+
+/* =========================
+   LOGIN
+========================= */
+
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: var(--bg-main);
+  padding: 24px;
+  color: var(--text-main);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-panel);
+  border-radius: 14px;
+  padding: 24px;
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.login-card h2 {
+  margin: 0 0 16px 0;
+}
+
+.login-form {
+  display: grid;
+  gap: 12px;
+}
+
+.login-field {
+  display: grid;
+  gap: 6px;
+}
+
+.login-field span {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.login-field input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-main);
+  color: var(--text-main);
+  outline: none;
+}
+
+.login-field input:focus {
+  border-color: var(--border-main);
+}
+
+.login-error {
+  color: var(--text-main);
+  background: var(--bg-main);
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border-main);
+}
+
+.login-button {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-soft);
+  background: var(--button-bg);
+  color: var(--text-main);
+  cursor: pointer;
+  opacity: 1;
+  font-weight: 500;
+}
+
+.login-button:hover:not(:disabled) {
+  background: var(--button-bg-hover);
+}
+
+.login-button:disabled {
+  background: var(--button-bg-hover);
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+/* =========================
+   HISTORY / ALARMS
+========================= */
+
+.history-page,
+.alarms-page {
+  width: 100%;
+}
+
+.history-title,
+.alarms-title {
+  margin-bottom: 24px;
+}
+
+.history-card,
+.alarms-card {
+  background: var(--bg-panel);
+  padding: 24px;
+  border-radius: 14px;
+  border: 1px solid var(--border-soft);
+}
+
+.history-error,
+.alarms-error {
+  color: var(--border-main);
+}
+
+.history-empty,
+.alarms-empty {
+  color: var(--text-muted);
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.history-table,
+.alarms-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.history-table {
+  min-width: 500px;
+}
+
+.alarms-table {
+  min-width: 580px;
+}
+
+.history-table th,
+.alarms-table th {
+  text-align: left;
+  color: var(--text-muted);
+  padding-bottom: 12px;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.history-table td,
+.alarms-table td {
+  padding: 10px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 0.9rem;
+  vertical-align: top;
+}
+
+.co-value {
+  font-weight: 600;
+}
+
+/* =========================
+   CLOCK
+========================= */
+
+.clock-card {
+  background: var(--bg-panel);
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid var(--border-soft);
+  text-align: center;
+}
+
+.clock-label {
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  font-size: 0.8rem;
+}
+
+.clock-date {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.clock-time {
+  font-size: 2rem;
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 900px) {
+  .topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .topbar-left,
+  .topbar-right {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .topbar-right {
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    font-size: 15px;
+  }
+
+  .app-main {
+    padding: 20px 16px;
+  }
+
+  .dashboard-header {
+    margin-bottom: 24px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.55rem;
+  }
+
+  .dashboard-card,
+  .history-card,
+  .alarms-card {
+    padding: 18px;
+    border-radius: 12px;
+  }
+
+  .measurement-row {
+    font-size: 1.6rem;
+  }
+
+  .chart-card {
+    height: 340px;
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .chart-wrapper {
+    height: 280px;
+  }
+
+  .chart-title {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
+  .history-table {
+    min-width: 420px;
+  }
+
+  .alarms-table {
+    min-width: 460px;
+  }
+
+  .clock-card {
+    padding: 16px;
+  }
+
+  .clock-time {
+    font-size: 1.7rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .topbar {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .topbar-left {
+    gap: 8px;
+  }
+
+  .topbar-brand {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .topbar-link,
+  .logout-button {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
+
+  .rooms-dropdown {
+    flex: 1;
+  }
+
+  .rooms-dropdown .topbar-link {
+    width: 100%;
+  }
+
+  .rooms-menu {
+    min-width: 100%;
+  }
+
+  .topbar-time {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .topbar-user {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    font-size: 14px;
+  }
+
+  .app-main {
+    padding: 16px 12px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.35rem;
+  }
+
+  .dashboard-grid {
+    gap: 18px;
+  }
+
+  .period-button {
+    flex: 1;
+  }
+
+  .dashboard-card,
+  .history-card,
+  .alarms-card {
+    padding: 14px;
+  }
+
+  .measurement-row {
+    font-size: 1.35rem;
+  }
+
+  .measurement-icon {
+    min-width: 28px;
+  }
+
+  .chart-card {
+    height: 310px;
+    padding: 12px;
+  }
+
+  .chart-wrapper {
+    height: 255px;
+  }
+
+  .login-page {
+    padding: 16px 12px;
+  }
+
+  .login-card {
+    padding: 18px;
+    border-radius: 12px;
+  }
+
+  .history-table {
+    min-width: 360px;
+  }
+
+  .alarms-table {
+    min-width: 420px;
+  }
+
+  .history-table th,
+  .history-table td,
+  .alarms-table th,
+  .alarms-table td {
+    font-size: 0.8rem;
+  }
+
+  .clock-card {
+    padding: 12px;
+  }
+
+  .clock-time {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .topbar-date {
+    display: none;
+  }
+}
+
