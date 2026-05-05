@@ -2,6 +2,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { FaChevronDown, FaMoon, FaSun } from "react-icons/fa";
 import { clearTokens } from "../auth/auth";
+import logo from "../assets/env_button_logo.webp";
 
 export default function TopBar() {
   const navigate = useNavigate();
@@ -46,7 +47,9 @@ export default function TopBar() {
   return (
     <header className="topbar">
       <div className="topbar-left">
-        <div className="topbar-brand">ENV-MONITOR</div>
+        <div className="topbar-brand">
+          <img src={logo} alt="ENV-MONITOR" className="topbar-logo" />
+        </div>
 
         <div ref={dropdownRef} className="rooms-dropdown">
           <button

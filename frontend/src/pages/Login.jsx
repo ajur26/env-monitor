@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_BASE } from "../api/client";
 import { setTokens } from "../auth/auth";
+import logo from "../assets/env_button_logo.webp";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -41,7 +42,11 @@ export default function Login() {
   return (
     <main className="login-page">
       <section className="login-card">
-        <h2>Login</h2>
+        <div className="login-brand">
+          <img src={logo} alt="ENV-MONITOR logo" className="login-logo" />
+        </div>
+
+
 
         <form onSubmit={onSubmit} className="login-form">
           <label className="login-field">
@@ -68,6 +73,22 @@ export default function Login() {
           <button type="submit" disabled={loading} className="login-button">
             {loading ? "Logging in..." : "Login"}
           </button>
+
+                  <div className="demo-login-box">
+          <p className="demo-login-title">Dostęp demonstracyjny</p>
+
+          <button
+            type="button"
+            className="demo-login-button"
+            onClick={() => {
+              setUsername("demo");
+              setPassword("Demo1234!");
+            }}
+          >
+            Użyj konta demo
+          </button>
+        </div>
+
         </form>
       </section>
     </main>
