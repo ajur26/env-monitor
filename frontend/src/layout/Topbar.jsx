@@ -4,12 +4,48 @@ import { FaChevronDown, FaMoon, FaSun } from "react-icons/fa";
 import { clearTokens } from "../auth/auth";
 import logo from "../assets/env_button_logo.webp";
 
+function getLoggedUsername() {
+  const savedUsername =
+    localStorage.getItem("envmonitor_username") ||
+    localStorage.getItem("username") ||
+    localStorage.getItem("user");
+
+  if (savedUsername) {
+    return savedUsername;
+  }
+
+  const token =
+    localStorage.getItem("envmonitor_access_token") ||
+    localStorage.getItem("access_token") ||
+    localStorage.getItem("access");
+
+  if (!token) {
+    return "User";
+  }
+
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+
+    return (
+      payload.username ||
+      payload.name ||
+      payload.email ||
+      payload.user ||
+      "User"
+    );
+  } catch {
+    return "User";
+  }
+}
+
 export default function TopBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const dropdownRef = useRef(null);
+
   const [roomsOpen, setRoomsOpen] = useState(false);
   const [now, setNow] = useState(new Date());
+  const [username, setUsername] = useState(getLoggedUsername());
 
   const isLivingRoom = location.pathname.includes("/room/living_room");
   const isBedroom = location.pathname.includes("/room/bedroom");
@@ -17,6 +53,8 @@ export default function TopBar() {
 
   function handleLogout() {
     clearTokens();
+    localStorage.removeItem("envmonitor_username");
+    setUsername("User");
     navigate("/login", { replace: true });
   }
 
@@ -24,6 +62,10 @@ export default function TopBar() {
     navigate(`/room/${room}`);
     setRoomsOpen(false);
   }
+
+  useEffect(() => {
+    setUsername(getLoggedUsername());
+  }, [location.pathname]);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -109,7 +151,7 @@ export default function TopBar() {
           )}
         </div>
 
-        <div className="topbar-user">Admin</div>
+        <div className="topbar-user">{username}</div>
 
         <button onClick={handleLogout} className="logout-button">
           Log out
