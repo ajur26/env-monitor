@@ -31,6 +31,7 @@ export default function Login() {
       }
 
       setTokens({ access: data.access, refresh: data.refresh });
+      localStorage.setItem("envmonitor_username", username);
       navigate("/room/living_room", { replace: true });
     } catch {
       setErr("Error connecting to API");

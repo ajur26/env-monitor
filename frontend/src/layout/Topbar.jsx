@@ -4,13 +4,37 @@ import { FaChevronDown, FaMoon, FaSun } from "react-icons/fa";
 import { clearTokens } from "../auth/auth";
 import logo from "../assets/env_button_logo.webp";
 
+function decodeJwtPayload(token) {
+  try {
+    const base64Url = token.split(".")[1];
+
+    if (!base64Url) {
+      return null;
+    }
+
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((char) => {
+          return "%" + ("00" + char.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join("")
+    );
+
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+}
+
 function getLoggedUsername() {
   const savedUsername =
     localStorage.getItem("envmonitor_username") ||
     localStorage.getItem("username") ||
     localStorage.getItem("user");
 
-  if (savedUsername) {
+  if (savedUsername && savedUsername.trim() !== "") {
     return savedUsername;
   }
 
@@ -23,19 +47,21 @@ function getLoggedUsername() {
     return "User";
   }
 
-  try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
+  const payload = decodeJwtPayload(token);
 
-    return (
-      payload.username ||
-      payload.name ||
-      payload.email ||
-      payload.user ||
-      "User"
-    );
-  } catch {
+  if (!payload) {
     return "User";
   }
+
+  return (
+    payload.username ||
+    payload.name ||
+    payload.email ||
+    payload.user ||
+    payload.user_name ||
+    payload.preferred_username ||
+    "User"
+  );
 }
 
 export default function TopBar() {
@@ -54,6 +80,8 @@ export default function TopBar() {
   function handleLogout() {
     clearTokens();
     localStorage.removeItem("envmonitor_username");
+    localStorage.removeItem("username");
+    localStorage.removeItem("user");
     setUsername("User");
     navigate("/login", { replace: true });
   }
@@ -66,6 +94,15 @@ export default function TopBar() {
   useEffect(() => {
     setUsername(getLoggedUsername());
   }, [location.pathname]);
+
+  useEffect(() => {
+    function handleStorageChange() {
+      setUsername(getLoggedUsername());
+    }
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event) {
