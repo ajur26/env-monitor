@@ -1,67 +1,59 @@
-# Indoor Environment Monitoring System
+# ENV-MONITOR
 
-A full-stack IoT system for monitoring indoor environmental conditions using an ESP32 microcontroller, a Django REST API backend, and a React-based web dashboard.
+ENV-MONITOR is a web application for monitoring indoor environmental conditions using an ESP32 microcontroller. The system collects data from sensors, sends measurements to the backend, stores them in a database, and presents current and historical readings in a web interface.
 
----
+## Demo
 
-## Overview
+The application is available at:
 
-The system collects environmental measurements from an ESP32 device, stores them in a database, and exposes them via a REST API for real-time visualization.
+https://andrzejjur.pl/envmonitorapp/login
 
-Measured parameters:
-- Temperature
-- Humidity
-- CO (Carbon Monoxide)
+## Features
 
----
+- temperature, humidity, and atmospheric pressure measurements,
+- carbon monoxide monitoring using the MQ-7 sensor,
+- support for multiple measurement points,
+- data transmission from ESP32 to the backend via HTTP,
+- measurement storage in a database,
+- latest measurement preview,
+- line charts for selected time ranges,
+- measurement history,
+- alarm system for CO threshold exceedances,
+- user authentication,
+- API protection using JWT tokens and a device API key.
 
-## Architecture
+## Technologies
 
-ESP32 (MicroPython) → Django REST API → Database → React Frontend (SPA)
+### Frontend
 
----
+- React
+- Vite
+- JavaScript
+- CSS
+- Recharts
+- React Router
 
-## Technology Stack
+### Backend
 
-Backend: Django, Django REST Framework  
-Frontend: React (Vite)  
-Database: SQLite (development), PostgreSQL (planned)  
-Hardware: ESP32 (MicroPython)
+- Python
+- Django
+- Django REST Framework
+- Simple JWT
+- PostgreSQL / SQLite
 
----
+### Measurement Module
 
-## Key Features
+- ESP32
+- MicroPython
+- BME280
+- MQ-7
+- Wi-Fi communication
+- HTTP REST API
 
-- Secure data ingestion via API token (`X-API-KEY`)
-- Data validation and pagination
-- Statistical aggregation (latest, 1h avg, 24h avg)
-- Responsive dashboard
-- Automatic data refresh
+### Deployment
 
----
-
-## Development Setup
-
-Backend:
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
-
-Frontend:
-cd frontend
-npm install
-npm run dev
-
-Backend: http://127.0.0.1:8000/  
-Frontend: http://localhost:5173/
-
----
-
-## Project Status
-
-Backend: MVP complete  
-Frontend: Functional dashboard  
-ESP32 integration: In progress  
-Production deployment: Planned
+- VPS
+- Nginx
+- Gunicorn
+- systemd
+- Cloudflare DNS
