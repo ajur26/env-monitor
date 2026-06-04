@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaMoon, FaSun } from "react-icons/fa";
 import { API_BASE } from "../api/client";
 import { setTokens } from "../auth/auth";
+import { applyTheme, getNextTheme, getSavedTheme } from "../theme/theme";
 import logo from "../assets/env_button_logo.webp";
 
 export default function Login() {
@@ -10,6 +12,15 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
+  const [theme, setTheme] = useState(getSavedTheme());
+
+  function toggleTheme() {
+    setTheme(getNextTheme);
+  }
+
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -42,6 +53,16 @@ export default function Login() {
 
   return (
     <main className="login-page">
+      <button
+        type="button"
+        className="theme-toggle login-theme-toggle"
+        onClick={toggleTheme}
+        aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+        title={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+      >
+        {theme === "dark" ? <FaSun size={15} /> : <FaMoon size={15} />}
+      </button>
+
       <section className="login-card">
         <div className="login-brand">
           <img src={logo} alt="ENV-MONITOR logo" className="login-logo" />

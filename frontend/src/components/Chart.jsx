@@ -9,7 +9,7 @@ import {
   Legend,
 } from "recharts";
 
-function formatTime(ts, period) {
+function formatTime(ts) {
   const date = new Date(ts);
 
   return date.toLocaleTimeString([], {
@@ -52,13 +52,13 @@ export default function Chart({ data, title, period }) {
               }}
             >
               <CartesianGrid
-                stroke="rgba(255,255,255,0.06)"
+                stroke="var(--chart-grid)"
                 strokeDasharray="3 3"
               />
 
               <XAxis
                 dataKey="created_at"
-                tickFormatter={(value) => formatTime(value, period)}
+                tickFormatter={formatTime}
                 stroke="var(--text-muted)"
                 tick={{ fontSize: 11 }}
                 minTickGap={24}
@@ -125,7 +125,7 @@ export default function Chart({ data, title, period }) {
                 type="monotone"
                 dataKey="co"
                 name="CO"
-                stroke="#e5e7eb"
+                stroke="var(--co-line)"
                 strokeWidth={2}
                 dot={false}
               />

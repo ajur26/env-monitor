@@ -16,9 +16,35 @@
   --button-bg-hover: #181c20;
   --button-active: #b8bec5;
   --button-active-text: #0b0c0d;
+  --chart-grid: rgba(255, 255, 255, 0.06);
+  --table-border: rgba(255, 255, 255, 0.04);
+  --demo-bg: rgba(15, 15, 15, 0.95);
+  --shadow-panel: rgba(0, 0, 0, 0.35);
+  --co-line: #e5e7eb;
 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+:root[data-theme="light"] {
+  --bg-main: #f5f7fa;
+  --bg-panel: #ffffff;
+
+  --border-main: #64748b;
+  --border-soft: #cbd5e1;
+
+  --text-main: #111827;
+  --text-muted: #64748b;
+
+  --button-bg: #ffffff;
+  --button-bg-hover: #eef2f7;
+  --button-active: #111827;
+  --button-active-text: #ffffff;
+  --chart-grid: rgba(15, 23, 42, 0.09);
+  --table-border: rgba(15, 23, 42, 0.09);
+  --demo-bg: #f8fafc;
+  --shadow-panel: rgba(15, 23, 42, 0.12);
+  --co-line: #334155;
 }
 
 * {
@@ -160,7 +186,7 @@ a {
   border-radius: 12px;
   border: 1px solid var(--border-soft);
   background: var(--bg-panel);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 10px 30px var(--shadow-panel);
   z-index: 1000;
   display: flex;
   flex-direction: column;
@@ -197,6 +223,30 @@ a {
   color: var(--text-muted);
   font-size: 0.75rem;
   white-space: nowrap;
+}
+
+.theme-toggle {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--border-soft);
+  background: var(--button-bg);
+  color: var(--text-main);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--button-bg-hover);
+  border-color: var(--border-main);
+}
+
+.theme-toggle:active {
+  transform: translateY(1px);
 }
 
 .topbar-clock {
@@ -373,6 +423,13 @@ a {
   color: var(--text-main);
 }
 
+.login-theme-toggle {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 10;
+}
+
 .login-card {
   width: 100%;
   max-width: 420px;
@@ -380,7 +437,7 @@ a {
   border-radius: 14px;
   padding: 32px 24px 24px;
   border: 1px solid var(--border-soft);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 6px 20px var(--shadow-panel);
 }
 
 .login-card h2 {
@@ -419,9 +476,9 @@ a {
   width: 100%;
   margin-bottom: 22px;
   padding: 18px;
-  border: 1px solid rgba(184, 190, 197, 0.28);
+  border: 1px solid var(--border-soft);
   border-radius: 16px;
-  background: rgba(15, 15, 15, 0.95);
+  background: var(--demo-bg);
   color: var(--text-main);
 }
 
@@ -576,7 +633,7 @@ a {
 .history-table td,
 .alarms-table td {
   padding: 10px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  border-top: 1px solid var(--table-border);
   font-size: 0.9rem;
   vertical-align: top;
 }
@@ -738,8 +795,8 @@ a {
   }
 
   .topbar-time {
-    width: 100%;
-    justify-content: space-between;
+    flex: 1;
+    justify-content: flex-start;
   }
 
   .topbar-user {

@@ -2,6 +2,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { FaChevronDown, FaMoon, FaSun } from "react-icons/fa";
 import { clearTokens } from "../auth/auth";
+import { applyTheme, getNextTheme, getSavedTheme } from "../theme/theme";
 import logo from "../assets/env_button_logo.webp";
 
 function decodeJwtPayload(token) {
@@ -72,6 +73,7 @@ export default function TopBar() {
   const [roomsOpen, setRoomsOpen] = useState(false);
   const [now, setNow] = useState(new Date());
   const [username, setUsername] = useState(getLoggedUsername());
+  const [theme, setTheme] = useState(getSavedTheme());
 
   const isLivingRoom = location.pathname.includes("/room/living_room");
   const isBedroom = location.pathname.includes("/room/bedroom");
@@ -91,9 +93,13 @@ export default function TopBar() {
     setRoomsOpen(false);
   }
 
+  function toggleTheme() {
+    setTheme(getNextTheme);
+  }
+
   useEffect(() => {
-    setUsername(getLoggedUsername());
-  }, [location.pathname]);
+    applyTheme(theme);
+  }, [theme]);
 
   useEffect(() => {
     function handleStorageChange() {
@@ -187,6 +193,16 @@ export default function TopBar() {
             <FaMoon color="#e5e7eb" size={14} />
           )}
         </div>
+
+        <button
+          type="button"
+          className="theme-toggle"
+          onClick={toggleTheme}
+          aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+          title={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+        >
+          {theme === "dark" ? <FaSun size={15} /> : <FaMoon size={15} />}
+        </button>
 
         <div className="topbar-user">{username}</div>
 

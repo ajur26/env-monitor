@@ -195,7 +195,7 @@ export default function Dashboard() {
               />
 
               <MeasurementRow
-                icon={<FaSmog color="#e5e7eb" />}
+                icon={<FaSmog color="var(--co-line)" />}
                 value={latest?.co ?? "-"}
                 unit="ppm"
               />
